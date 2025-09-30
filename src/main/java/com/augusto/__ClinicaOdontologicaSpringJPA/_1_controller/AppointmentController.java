@@ -3,15 +3,15 @@ package com.augusto.__ClinicaOdontologicaSpringJPA._1_controller;
 import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IAppointmentService;
 import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IDentistService;
 import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IPatientService;
-import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.impl.AppointmentServiceImpl;
-import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Appointment;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentResponseDTO;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,4 +84,35 @@ public class AppointmentController {
         iAppointmentServiceImpl.delete(id);
         return ResponseEntity.ok("Se elimino el turno con id: " + id);
     }
+
+    @PostMapping("/v2")
+    public ResponseEntity<AppointmentResponseDTO> createAppointmentV2(@Valid @RequestBody AppointmentCreateDTO appointmentCreateDTO) {
+        AppointmentResponseDTO createdAppointment = iAppointmentServiceImpl.createAppointment(appointmentCreateDTO);
+        return new ResponseEntity<>(createdAppointment, HttpStatus.CREATED);
+    }
+
+    // GET ALL con nuevo DTO
+    @GetMapping("/v2")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointmentsV2() {
+        List<AppointmentResponseDTO> appointments = iAppointmentServiceImpl.findAllAppointmentResponses();
+        return ResponseEntity.ok(appointments);
+    }
+
+    // GET BY ID con nuevo DTO
+    @GetMapping("/v2/{id}")
+    public ResponseEntity<AppointmentResponseDTO> getAppointmentByIdV2(@PathVariable Long id) {
+        AppointmentResponseDTO appointment = iAppointmentServiceImpl.findAppointmentResponseById(id);
+        return ResponseEntity.ok(appointment);
+    }
+
+    // PUT con nuevo DTO
+    @PutMapping("/v2/{id}")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointmentV2(
+            @PathVariable Long id,
+            @Valid @RequestBody AppointmentCreateDTO appointmentCreateDTO) {
+
+        AppointmentResponseDTO updatedAppointment = iAppointmentServiceImpl.updateAppointment(id, appointmentCreateDTO);
+        return ResponseEntity.ok(updatedAppointment);
+    }
+
 }

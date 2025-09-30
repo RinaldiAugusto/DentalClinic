@@ -6,6 +6,12 @@ import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Dentist;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.DentistDTOs.DentistCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.DentistDTOs.DentistResponseDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
+import com.augusto.__ClinicaOdontologicaSpringJPA.mapper.DentistMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +20,9 @@ import java.util.Optional;
 public class DentistServiceImpl implements IDentistService {
 
     private DentistRepository repository;
+
+    @Autowired
+    private DentistMapper dentistMapper;
 
     @Autowired
     public DentistServiceImpl(DentistRepository repository) {
@@ -45,6 +54,38 @@ public class DentistServiceImpl implements IDentistService {
 
     public List<Dentist> findAll(){
         return repository.findAll();
+    }
+
+    @Override
+    public DentistResponseDTO createDentist(DentistCreateDTO dentistCreateDTO) {
+        Dentist dentist = dentistMapper.toEntity(dentistCreateDTO);
+        Dentist savedDentist = repository.save(dentist);
+        return dentistMapper.toResponseDTO(savedDentist);
+    }
+
+    @Override
+    public DentistResponseDTO updateDentist(Long id, DentistCreateDTO dentistCreateDTO) throws ResourceNotFoundException {
+        Dentist existingDentist = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dentista no encontrado con ID: " + id));
+
+        dentistMapper.updateEntityFromDTO(dentistCreateDTO, existingDentist);
+        Dentist updatedDentist = repository.save(existingDentist);
+        return dentistMapper.toResponseDTO(updatedDentist);
+    }
+
+    @Override
+    public DentistResponseDTO findDentistDTOById(Long id) throws ResourceNotFoundException {
+        Dentist dentist = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dentista no encontrado con ID: " + id));
+        return dentistMapper.toResponseDTO(dentist);
+    }
+
+    @Override
+    public List<DentistResponseDTO> findAllDentistDTOs() {
+        return repository.findAll()
+                .stream()
+                .map(dentistMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
 }

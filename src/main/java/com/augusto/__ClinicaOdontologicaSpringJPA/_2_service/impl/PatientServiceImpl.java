@@ -6,14 +6,14 @@ import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Patient;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientCreateDTO;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientResponseDTO;
-import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientResponseDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.mapper.PatientMapper;
+
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PatientServiceImpl implements IPatientService {
@@ -91,6 +91,5 @@ public class PatientServiceImpl implements IPatientService {
                 .stream()
                 .map(patientMapper::toResponseDTO)
                 .collect(Collectors.toList());
-
     }
 }

@@ -2,8 +2,12 @@ package com.augusto.__ClinicaOdontologicaSpringJPA._1_controller;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IDentistService;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Dentist;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.DentistDTOs.DentistCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.DentistDTOs.DentistResponseDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,29 +26,30 @@ public class DentistController {
     }
 
     @PostMapping
-    public Dentist save(@RequestBody Dentist dentist){
-        return iDentistService.save(dentist);
+    public ResponseEntity<DentistResponseDTO> createDentist(@Valid @RequestBody DentistCreateDTO dentistCreateDTO) {
+        DentistResponseDTO createdDentist = iDentistService.createDentist(dentistCreateDTO);
+        return new ResponseEntity<>(createdDentist, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Dentist>> findAll(){
-        return ResponseEntity.ok(iDentistService.findAll());
+    public ResponseEntity<List<DentistResponseDTO>> getAllDentists() {
+        List<DentistResponseDTO> dentists = iDentistService.findAllDentistDTOs();
+        return ResponseEntity.ok(dentists);
     }
 
-    @GetMapping("/id/{id}")
-    public Optional<Dentist> findById(@PathVariable Long id){
-        return iDentistService.findById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<DentistResponseDTO> getDentistById(@PathVariable Long id) throws ResourceNotFoundException {
+        DentistResponseDTO dentist = iDentistService.findDentistDTOById(id);
+        return ResponseEntity.ok(dentist);
     }
 
-    @PutMapping
-    public Dentist update(@RequestBody Dentist dentist){
-        Optional<Dentist> optionalDentist = iDentistService.findById(dentist.getId());
-        if (optionalDentist.isPresent()) {
-            iDentistService.update(dentist);
-            return dentist;
-        }else{
-            return dentist;
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<DentistResponseDTO> updateDentist(
+            @PathVariable Long id,
+            @Valid @RequestBody DentistCreateDTO dentistCreateDTO) throws ResourceNotFoundException {
+
+        DentistResponseDTO updatedDentist = iDentistService.updateDentist(id, dentistCreateDTO);
+        return ResponseEntity.ok(updatedDentist);
     }
 
     @DeleteMapping("/delete/{id}")

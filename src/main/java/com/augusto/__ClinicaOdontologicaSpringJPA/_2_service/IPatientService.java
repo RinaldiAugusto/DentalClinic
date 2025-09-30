@@ -1,8 +1,8 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA._2_service;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Patient;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientCreateDTO;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientResponseDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientResponseDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
 import org.springframework.data.jpa.repository.Query;
 

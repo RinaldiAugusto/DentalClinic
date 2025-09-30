@@ -1,4 +1,6 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.dto;
+package com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs;
+
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressDTO;
 
 import java.time.LocalDate;
 

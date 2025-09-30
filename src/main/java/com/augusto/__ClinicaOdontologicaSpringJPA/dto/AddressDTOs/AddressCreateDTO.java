@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.dto;
+package com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

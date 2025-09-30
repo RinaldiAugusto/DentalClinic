@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.dto;
+package com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs;
 
 public class AddressDTO {
     private Long id;

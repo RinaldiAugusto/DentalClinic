@@ -1,9 +1,12 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA.mapper;
 
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.*;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Address;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Patient;
 import org.springframework.stereotype.Component;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientResponseDTO;
+
 
 @Component
 public class PatientMapper {

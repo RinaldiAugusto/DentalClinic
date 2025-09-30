@@ -5,25 +5,36 @@ import com.augusto.__ClinicaOdontologicaSpringJPA._3_repository.AppointmentRepos
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Appointment;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Dentist;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Patient;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentResponseDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.mapper.AppointmentMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl implements IAppointmentService {
     private AppointmentRepository repository;
+    private DentistServiceImpl dentistService;
+    private PatientServiceImpl patientService;
 
     @Autowired
     public AppointmentServiceImpl(AppointmentRepository repository) {
         this.repository = repository;
     }
+
+    @Autowired
+    private AppointmentMapper appointmentMapper;
 
     public AppointmentDTO save(AppointmentDTO appointmentDTO){
         //PERSISTIR ENTIDADES Y DEVOLVER DTOs
@@ -170,6 +181,57 @@ public class AppointmentServiceImpl implements IAppointmentService {
                      appointment.getDentist().getId(), appointment.getDate().toString()));
         }
         return appointmentDTOS;
+    }
+
+    @Override
+    public AppointmentResponseDTO createAppointment(AppointmentCreateDTO appointmentCreateDTO) {
+        Appointment appointment = appointmentMapper.toEntity(appointmentCreateDTO);
+        Appointment savedAppointment = repository.save(appointment);
+        return appointmentMapper.toResponseDTO(savedAppointment);
+    }
+
+    @Override
+    public AppointmentResponseDTO updateAppointment(Long id, AppointmentCreateDTO appointmentCreateDTO) {
+        // Primero buscamos el appointment existente
+        Appointment existingAppointment = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment no encontrado con ID: " + id));
+
+        // Actualizamos los campos
+        if (appointmentCreateDTO.getDate() != null) {
+            existingAppointment.setDate(appointmentCreateDTO.getDate());
+        }
+
+        // Actualizar paciente si se proporciona
+        if (appointmentCreateDTO.getPatientId() != null) {
+            Patient patient = patientService.findById(appointmentCreateDTO.getPatientId())
+                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+            existingAppointment.setPatient(patient);
+        }
+
+        // Actualizar dentista si se proporciona
+        if (appointmentCreateDTO.getDentistId() != null) {
+            Dentist dentist = dentistService.findById(appointmentCreateDTO.getDentistId())
+                    .orElseThrow(() -> new RuntimeException("Dentista no encontrado"));
+            existingAppointment.setDentist(dentist);
+        }
+
+        Appointment updatedAppointment = repository.save(existingAppointment);
+        return appointmentMapper.toResponseDTO(updatedAppointment);
+    }
+
+    @Override
+    public AppointmentResponseDTO findAppointmentResponseById(Long id) {
+        Appointment appointment = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment no encontrado con ID: " + id));
+        return appointmentMapper.toResponseDTO(appointment);
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> findAllAppointmentResponses() {
+        return repository.findAll()
+                .stream()
+                .map(appointmentMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
 }
