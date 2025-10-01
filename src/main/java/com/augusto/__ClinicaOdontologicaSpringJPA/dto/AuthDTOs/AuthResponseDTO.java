@@ -6,15 +6,18 @@ public class AuthResponseDTO {
     private String email;
     private String firstName;
     private String lastName;
+    private String role; // Nuevo campo
 
     // Constructores
     public AuthResponseDTO() {}
 
-    public AuthResponseDTO(String token, String email, String firstName, String lastName) {
+    // Constructor actualizado con 5 parámetros (incluyendo role)
+    public AuthResponseDTO(String token, String email, String firstName, String lastName, String role) {
         this.token = token;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
     }
 
     // Getters y Setters
@@ -32,4 +35,7 @@ public class AuthResponseDTO {
 
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

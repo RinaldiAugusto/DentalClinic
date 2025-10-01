@@ -1,6 +1,5 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
+package com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT;
 
-import com.augusto.__ClinicaOdontologicaSpringJPA.configuration.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +29,13 @@ public class SecurityConfig {
                         // Endpoints públicos
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll() // Si usas H2 console
 
-                        // PROTECCIÓN POR ROLES - ENDPOINTS EXISTENTES
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // PROTECCIÓN POR ROLES - FORMATO CORRECTO
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Sin "ROLE_" prefix aquí!
+
                         .requestMatchers("/patients/create", "/patients/update/**", "/patients/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER") // Sin "ROLE_" prefix!
 
                         .requestMatchers("/dentists/create", "/dentists/update/**", "/dentists/delete/**").hasRole("ADMIN")
                         .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
@@ -42,7 +43,6 @@ public class SecurityConfig {
                         .requestMatchers("/appointments/create", "/appointments/update/**", "/appointments/delete/**").hasRole("ADMIN")
                         .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
 
-                        // Cualquier otro endpoint requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

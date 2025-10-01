@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
+package com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

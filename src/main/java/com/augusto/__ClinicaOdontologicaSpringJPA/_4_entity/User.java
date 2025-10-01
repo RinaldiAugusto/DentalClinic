@@ -26,12 +26,16 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // ✅ NUEVO CAMPO - Refresh Token
+    private String refreshToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -62,5 +66,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public enum Role {
+        USER, ADMIN
     }
 }
