@@ -86,4 +86,23 @@ public class JwtService {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+    // En JwtService.java - AGREGA este método:
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+
+        // Para refresh token, podemos agregar un claim especial
+        claims.put("tokenType", "refresh");
+        claims.put("generatedAt", new Date());
+
+        // Refresh token con mayor expiración (7 días)
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 días
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 }

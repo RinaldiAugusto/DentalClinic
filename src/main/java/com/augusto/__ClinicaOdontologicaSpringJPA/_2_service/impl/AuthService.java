@@ -113,16 +113,16 @@ public class AuthService implements IAuthService {
         try {
             System.out.println("🔄 Intentando refresh token: " + refreshTokenRequest.getRefreshToken());
 
-            // Buscar usuario por refresh token - ✅ CORREGIDO: paréntesis cerrado
+            // Buscar usuario por refresh token
             User user = userRepository.findByRefreshToken(refreshTokenRequest.getRefreshToken())
                     .orElseThrow(() -> {
                         System.out.println("❌ Refresh token no encontrado en BD");
                         return new RuntimeException("Invalid refresh token");
-                    }); // ✅ AQUÍ ESTABA FALTANDO CERRAR ESTE PARÉNTESIS
+                    });
 
             System.out.println("✅ Usuario encontrado: " + user.getEmail());
 
-            // Validar que el refresh token coincida - ✅ CORREGIDO: lógica invertida
+            // Validar que el refresh token coincida
             if (!user.getRefreshToken().equals(refreshTokenRequest.getRefreshToken())) {
                 System.out.println("❌ Refresh token no coincide");
                 throw new RuntimeException("Invalid refresh token");
@@ -130,7 +130,7 @@ public class AuthService implements IAuthService {
 
             // Generar nuevos tokens
             String newAccessToken = jwtService.generateToken(user);
-            String newRefreshToken = jwtService.generateRefreshToken(user); // Esto dará error hasta que creemos el método
+            String newRefreshToken = jwtService.generateRefreshToken(user);
 
             // Actualizar refresh token en base de datos
             user.setRefreshToken(newRefreshToken);

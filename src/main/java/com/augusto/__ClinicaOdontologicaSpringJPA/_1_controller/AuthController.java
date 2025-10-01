@@ -1,8 +1,6 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA._1_controller;
 
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AuthDTOs.AuthResponseDTO;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AuthDTOs.LoginRequestDTO;
-import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AuthDTOs.RegisterRequestDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AuthDTOs.*;
 import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IAuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +30,19 @@ public class AuthController {
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("Auth endpoints are working!");
+    }
+
+    // En AuthController.java - AGREGA estos métodos:
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<RefreshTokenResponseDTO> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequest) {
+        RefreshTokenResponseDTO response = authService.refreshToken(refreshTokenRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequest) {
+        authService.logout(refreshTokenRequest);
+        return ResponseEntity.ok().build();
     }
 }
