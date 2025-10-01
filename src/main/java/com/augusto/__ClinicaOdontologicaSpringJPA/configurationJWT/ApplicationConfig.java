@@ -1,6 +1,8 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._3_repository.UserRepository;
+import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Role;
+import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +26,9 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() ->  new UsernameNotFoundException("No se encontro el usuario..."));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
