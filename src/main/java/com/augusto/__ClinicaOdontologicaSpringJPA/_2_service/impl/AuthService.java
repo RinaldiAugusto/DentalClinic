@@ -42,9 +42,14 @@ public class AuthService implements IAuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Generar token JWT
+            // Generar tokens JWT
             User user = (User) authentication.getPrincipal();
             String jwt = jwtService.generateToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user); // ✅ DECLARAR refreshToken
+
+            // ✅ ACTUALIZAR USUARIO CON REFRESH TOKEN
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
 
             // Crear response
             return new AuthResponseDTO(
@@ -52,7 +57,8 @@ public class AuthService implements IAuthService {
                     user.getEmail(),
                     user.getFirstName(),
                     user.getLastName(),
-                    user.getRole().toString()
+                    user.getRole().toString(),
+                    refreshToken  // ✅ AGREGAR ESTE PARÁMETRO
             );
 
         } catch (Exception e) {
@@ -87,27 +93,32 @@ public class AuthService implements IAuthService {
 
             User savedUser = userRepository.save(user);
 
-            // Generar token JWT
+            // ✅ GENERAR AMBOS TOKENS
             String jwt = jwtService.generateToken(savedUser);
+            String refreshToken = jwtService.generateRefreshToken(savedUser); // ✅ DECLARAR refreshToken
 
-            // Crear response
-            AuthResponseDTO response = new AuthResponseDTO(
+            // ✅ ACTUALIZAR USUARIO CON REFRESH TOKEN
+            savedUser.setRefreshToken(refreshToken);
+            userRepository.save(savedUser);
+
+            System.out.println("✅ USUARIO REGISTRADO EXITOSAMENTE: " + savedUser.getEmail() + " - Rol: " + savedUser.getRole());
+
+            // ✅ SOLO UN RETURN CON REFRESH TOKEN
+            return new AuthResponseDTO(
                     jwt,
                     savedUser.getEmail(),
                     savedUser.getFirstName(),
                     savedUser.getLastName(),
-                    savedUser.getRole().toString()
+                    savedUser.getRole().toString(),
+                    refreshToken  // ✅ AGREGAR ESTE PARÁMETRO
             );
-
-            System.out.println("✅ USUARIO REGISTRADO EXITOSAMENTE: " + savedUser.getEmail() + " - Rol: " + savedUser.getRole());
-
-            return response;
 
         } catch (Exception e) {
             System.out.println("❌ ERROR EN REGISTRO: " + e.getMessage());
             throw new RuntimeException("Error en registro: " + e.getMessage());
         }
     }
+
     @Override
     public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequest) {
         try {

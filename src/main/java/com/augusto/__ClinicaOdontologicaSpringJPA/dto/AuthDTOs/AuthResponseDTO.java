@@ -6,12 +6,25 @@ public class AuthResponseDTO {
     private String email;
     private String firstName;
     private String lastName;
-    private String role; // Nuevo campo
+    private String role;
+
+    // ✅ NUEVO CAMPO - Refresh Token
+    private String refreshToken;
 
     // Constructores
     public AuthResponseDTO() {}
 
-    // Constructor actualizado con 5 parámetros (incluyendo role)
+    // ✅ CONSTRUCTOR ACTUALIZADO con refreshToken
+    public AuthResponseDTO(String token, String email, String firstName, String lastName, String role, String refreshToken) {
+        this.token = token;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+        this.refreshToken = refreshToken;
+    }
+
+    // Constructor anterior (por compatibilidad)
     public AuthResponseDTO(String token, String email, String firstName, String lastName, String role) {
         this.token = token;
         this.email = email;
@@ -38,4 +51,8 @@ public class AuthResponseDTO {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    // ✅ NUEVO GETTER Y SETTER
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }
