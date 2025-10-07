@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -33,9 +34,13 @@ public class PdfService implements IPdfService {
             // Información del paciente
             addSubtitle(document, "Información Personal");
             addKeyValue(document, "Nombre:", patient.getName() + " " + patient.getLastName());
-            addKeyValue(document, "DNI:", patient.getCardIdentity());
-            addKeyValue(document, "Fecha de Ingreso:",
-                    patient.getAdmissionOfDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            addKeyValue(document, "DNI:", patient.getCardIdentity() != null ? patient.getCardIdentity() : "No especificado");
+
+            // ✅ CORREGIDO: Manejar fecha NULL
+            String admissionDate = (patient.getAdmissionOfDate() != null)
+                    ? patient.getAdmissionOfDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    : "No especificada";
+            addKeyValue(document, "Fecha de Ingreso:", admissionDate);
 
             // Espacio
             document.add(Chunk.NEWLINE);
@@ -43,9 +48,14 @@ public class PdfService implements IPdfService {
             // Información de contacto
             addSubtitle(document, "Información de Contacto");
             if (patient.getAddress() != null) {
-                addKeyValue(document, "Dirección:",
-                        patient.getAddress().getStreet() + ", " + patient.getAddress().getLocation());
-                addKeyValue(document, "Provincia:", patient.getAddress().getProvince());
+                String street = patient.getAddress().getStreet() != null ? patient.getAddress().getStreet() : "";
+                String location = patient.getAddress().getLocation() != null ? patient.getAddress().getLocation() : "";
+                String province = patient.getAddress().getProvince() != null ? patient.getAddress().getProvince() : "";
+
+                addKeyValue(document, "Dirección:", street + ", " + location);
+                addKeyValue(document, "Provincia:", province);
+            } else {
+                addKeyValue(document, "Dirección:", "No especificada");
             }
 
             document.close();
@@ -72,8 +82,13 @@ public class PdfService implements IPdfService {
                     appointment.getPatient().getName() + " " + appointment.getPatient().getLastName());
             addKeyValue(document, "Odontólogo:",
                     appointment.getDentist().getName() + " " + appointment.getDentist().getLastName());
-            addKeyValue(document, "Fecha:",
-                    appointment.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+            // ✅ CORREGIDO: Manejar fecha NULL
+            String appointmentDate = (appointment.getDate() != null)
+                    ? appointment.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    : "No especificada";
+            addKeyValue(document, "Fecha:", appointmentDate);
+
             addKeyValue(document, "Matrícula:",
                     String.valueOf(appointment.getDentist().getRegistration()));
 
@@ -108,15 +123,15 @@ public class PdfService implements IPdfService {
             // Información del paciente
             addSubtitle(document, "Datos del Paciente");
             addKeyValue(document, "Nombre:", patient.getName() + " " + patient.getLastName());
-            addKeyValue(document, "DNI:", patient.getCardIdentity());
+            addKeyValue(document, "DNI:", patient.getCardIdentity() != null ? patient.getCardIdentity() : "No especificado");
 
             // Espacio
             document.add(Chunk.NEWLINE);
 
             // Diagnóstico y tratamiento
             addSubtitle(document, "Evaluación Médica");
-            addParagraph(document, "Diagnóstico: " + diagnosis);
-            addParagraph(document, "Tratamiento Indicado: " + treatment);
+            addParagraph(document, "Diagnóstico: " + (diagnosis != null ? diagnosis : "No especificado"));
+            addParagraph(document, "Tratamiento Indicado: " + (treatment != null ? treatment : "No especificado"));
 
             // Espacio
             document.add(Chunk.NEWLINE);
@@ -135,7 +150,7 @@ public class PdfService implements IPdfService {
         }
     }
 
-    // Métodos auxiliares para formatear el PDF
+    // Métodos auxiliares para formatear el PDF (sin cambios)
     private void addTitle(Document document, String title) throws DocumentException {
         Paragraph titleParagraph = new Paragraph(title, TITLE_FONT);
         titleParagraph.setAlignment(Element.ALIGN_CENTER);
