@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT;
+package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

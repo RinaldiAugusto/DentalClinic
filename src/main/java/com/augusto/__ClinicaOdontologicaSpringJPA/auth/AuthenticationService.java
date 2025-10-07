@@ -1,9 +1,8 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA.auth;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._3_repository.UserRepository;
-import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Role;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.User;
-import com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT.JwtService;
+import com.augusto.__ClinicaOdontologicaSpringJPA.configuration.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

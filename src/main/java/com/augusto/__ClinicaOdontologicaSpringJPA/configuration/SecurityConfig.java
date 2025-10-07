@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT;
+package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

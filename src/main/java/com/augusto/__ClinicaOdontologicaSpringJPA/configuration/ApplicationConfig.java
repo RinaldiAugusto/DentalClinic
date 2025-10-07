@@ -1,4 +1,4 @@
-package com.augusto.__ClinicaOdontologicaSpringJPA.configurationJWT;
+package com.augusto.__ClinicaOdontologicaSpringJPA.configuration;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._3_repository.UserRepository;
 import lombok.RequiredArgsConstructor;
