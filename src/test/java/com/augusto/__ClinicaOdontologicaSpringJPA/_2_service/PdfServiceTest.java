@@ -27,6 +27,7 @@ class PdfServiceTest {
     @BeforeEach
     void setUp() {
         Address address = new Address();
+        address.setId(1L);
         address.setStreet("Calle Falsa");
         address.setLocation("Springfield");
         address.setProvince("Buenos Aires");
@@ -40,6 +41,7 @@ class PdfServiceTest {
         patient.setAddress(address);
 
         Dentist dentist = new Dentist();
+        dentist.setId(1L);
         dentist.setName("Dr. García");
         dentist.setLastName("Lopez");
         dentist.setRegistration(12345);
@@ -76,8 +78,8 @@ class PdfServiceTest {
         // When
         byte[] pdfBytes = pdfService.generateMedicalCertificate(
                 patient,
-                "Caries dental",
-                "Limpieza profesional"
+                "Caries dental en molar inferior derecho",
+                "Limpieza profesional y obturación composite"
         );
 
         // Then
@@ -89,13 +91,40 @@ class PdfServiceTest {
     void testGeneratePatientReport_WithNullFields() {
         // Given
         Patient patientWithNulls = new Patient();
+        patientWithNulls.setId(2L);
         patientWithNulls.setName("Maria");
         patientWithNulls.setLastName("Lopez");
         // admissionOfDate is null
         // address is null
+        // cardIdentity is null
 
         // When
         byte[] pdfBytes = pdfService.generatePatientReport(patientWithNulls);
+
+        // Then
+        assertNotNull(pdfBytes);
+        assertTrue(pdfBytes.length > 0);
+        // Should not throw exception
+    }
+
+    @Test
+    void testGenerateAppointmentReceipt_WithNullDate() {
+        // Given
+        appointment.setDate(null);
+
+        // When
+        byte[] pdfBytes = pdfService.generateAppointmentReceipt(appointment);
+
+        // Then
+        assertNotNull(pdfBytes);
+        assertTrue(pdfBytes.length > 0);
+        // Should not throw exception
+    }
+
+    @Test
+    void testGenerateMedicalCertificate_WithNullParameters() {
+        // When
+        byte[] pdfBytes = pdfService.generateMedicalCertificate(patient, null, null);
 
         // Then
         assertNotNull(pdfBytes);

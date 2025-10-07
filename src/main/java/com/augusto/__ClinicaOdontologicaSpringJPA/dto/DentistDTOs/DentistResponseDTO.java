@@ -1,29 +1,31 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA.dto.DentistDTOs;
 
 public class DentistResponseDTO {
-    private Long dentistId;
+    private Long id;
     private String name;
-    private String apellido;
+    private String lastName;
     private Integer registration;
+
 
     // Constructores, getters y setters...
     public DentistResponseDTO() {}
 
-    public DentistResponseDTO(Long dentistId, String name, String apellido, Integer registration) {
-        this.dentistId = dentistId;
+    public DentistResponseDTO(Long id, String name, String lastName, Integer registration) {
+        this.id = id;
         this.name = name;
-        this.apellido = apellido;
+        this.lastName = lastName;
         this.registration = registration;
     }
 
-    public Long getDentistId() { return dentistId; }
-    public void setDentistId(Long dentistId) { this.dentistId = dentistId; }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
     public Integer getRegistration() { return registration; }
     public void setRegistration(Integer registration) { this.registration = registration; }

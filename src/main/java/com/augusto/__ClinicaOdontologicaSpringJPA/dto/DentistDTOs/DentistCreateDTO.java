@@ -12,7 +12,7 @@ public class DentistCreateDTO {
 
     @NotBlank(message = "El apellido es obligatorio")
     @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
-    private String apellido;
+    private String lastName;
 
     @NotNull(message = "La matrícula es obligatoria")
     private Integer registration;
@@ -20,17 +20,17 @@ public class DentistCreateDTO {
     // Constructores, getters y setters...
     public DentistCreateDTO() {}
 
-    public DentistCreateDTO(String name, String apellido, Integer registration) {
+    public DentistCreateDTO(String name, String lastName, Integer registration) {
         this.name = name;
-        this.apellido = apellido;
+        this.lastName = lastName;
         this.registration = registration;
     }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getApellido() { return lastName; }
+    public void setLastName(String apellido) { this.lastName = apellido; }
 
     public Integer getRegistration() { return registration; }
     public void setRegistration(Integer registration) { this.registration = registration; }
