@@ -1,6 +1,7 @@
 package com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressCreateDTO;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -55,5 +56,5 @@ public class PatientCreateDTO {
     public void setAdmissionOfDate(LocalDate admissionOfDate) { this.admissionOfDate = admissionOfDate; }
 
     public AddressCreateDTO getAddress() { return address; }
-    public void setAddress(AddressCreateDTO address) { this.address = address; }
+    public void setAddress(AddressDTO address) { this.address = address; }
 }
