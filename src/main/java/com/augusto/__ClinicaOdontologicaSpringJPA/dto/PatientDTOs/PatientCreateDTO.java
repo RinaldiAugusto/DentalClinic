@@ -56,5 +56,5 @@ public class PatientCreateDTO {
     public void setAdmissionOfDate(LocalDate admissionOfDate) { this.admissionOfDate = admissionOfDate; }
 
     public AddressCreateDTO getAddress() { return address; }
-    public void setAddress(AddressDTO address) { this.address = address; }
+    public void setAddress(AddressCreateDTO address) { this.address = address; }
 }

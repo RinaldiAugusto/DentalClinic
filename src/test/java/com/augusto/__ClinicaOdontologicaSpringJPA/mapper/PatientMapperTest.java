@@ -2,6 +2,7 @@ package com.augusto.__ClinicaOdontologicaSpringJPA.mapper;
 
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Address;
 import com.augusto.__ClinicaOdontologicaSpringJPA._4_entity.Patient;
+import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressCreateDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AddressDTOs.AddressDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientCreateDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.PatientDTOs.PatientResponseDTO;
@@ -85,17 +86,18 @@ class PatientMapperTest {
     @Test
     void testToEntity_WithAddress() {
         // Given
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setStreet("Calle Test");
-        addressDTO.setLocation("Location Test");
-        addressDTO.setProvince("Province Test");
+        // CAMBIO: Usar AddressCreateDTO en lugar de AddressDTO
+        AddressCreateDTO addressCreateDTO = new AddressCreateDTO();
+        addressCreateDTO.setStreet("Calle Test");
+        addressCreateDTO.setLocation("Location Test");
+        addressCreateDTO.setProvince("Province Test");
 
         PatientCreateDTO createDTO = new PatientCreateDTO();
         createDTO.setName("John");
         createDTO.setLastName("Doe");
         createDTO.setCardIdentity("87654321");
         createDTO.setAdmissionOfDate(LocalDate.of(2024, 1, 5));
-        createDTO.setAddress(addressDTO);
+        createDTO.setAddress(addressCreateDTO); // ← Ahora funciona
 
         // When
         Patient patient = patientMapper.toEntity(createDTO);
@@ -153,17 +155,18 @@ class PatientMapperTest {
         existingAddress.setProvince("Old Province");
         existingPatient.setAddress(existingAddress);
 
-        AddressDTO newAddressDTO = new AddressDTO();
-        newAddressDTO.setStreet("New Street");
-        newAddressDTO.setLocation("New Location");
-        newAddressDTO.setProvince("New Province");
+        // CAMBIO: Usar AddressCreateDTO
+        AddressCreateDTO newAddressCreateDTO = new AddressCreateDTO();
+        newAddressCreateDTO.setStreet("New Street");
+        newAddressCreateDTO.setLocation("New Location");
+        newAddressCreateDTO.setProvince("New Province");
 
         PatientCreateDTO updateDTO = new PatientCreateDTO();
         updateDTO.setName("New Name");
         updateDTO.setLastName("New LastName");
         updateDTO.setCardIdentity("22222222");
         updateDTO.setAdmissionOfDate(LocalDate.of(2024, 1, 1));
-        updateDTO.setAddress(newAddressDTO);
+        updateDTO.setAddress(newAddressCreateDTO); // ← Ahora funciona
 
         // When
         patientMapper.updateEntityFromDTO(updateDTO, existingPatient);
@@ -179,7 +182,6 @@ class PatientMapperTest {
         assertEquals("New Location", existingPatient.getAddress().getLocation());
         assertEquals("New Province", existingPatient.getAddress().getProvince());
     }
-
     @Test
     void testUpdateEntityFromDTO_NullInput() {
         // Given
