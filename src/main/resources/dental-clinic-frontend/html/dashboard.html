@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Dashboard - Clínica Dental</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="config.js"></script>
+    <script src="js/auth.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="dashboard.html">
+        <i class="fas fa-tooth mr-2"></i>Clínica Dental
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user-md mr-1"></i>Odontólogos
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="dentistList.html">
+                        <i class="fas fa-list mr-2"></i>Listar Odontólogos
+                    </a>
+                    <a class="dropdown-item" href="dentistAdd.html">
+                        <i class="fas fa-plus mr-2"></i>Agregar Odontólogo
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user-injured mr-1"></i>Pacientes
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="patientList.html">
+                        <i class="fas fa-list mr-2"></i>Listar Pacientes
+                    </a>
+                    <a class="dropdown-item" href="patientAdd.html">
+                        <i class="fas fa-plus mr-2"></i>Agregar Paciente
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-calendar-check mr-1"></i>Turnos
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="appointmentList.html">
+                        <i class="fas fa-list mr-2"></i>Listar Turnos
+                    </a>
+                    <a class="dropdown-item" href="appointmentAdd.html">
+                        <i class="fas fa-plus mr-2"></i>Agregar Turno
+                    </a>
+                </div>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user-circle mr-1"></i>Usuario
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="profile.html">
+                        <i class="fas fa-user mr-2"></i>Mi Perfil
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" onclick="AuthService.logout()">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Dashboard - Sistema de Gestión</h2>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="dentistsCount">0</h4>
+                            <p>Odontólogos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="patientsCount">0</h4>
+                            <p>Pacientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-injured fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="appointmentsCount">0</h4>
+                            <p>Turnos Hoy</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="totalAppointments">0</h4>
+                            <p>Total Turnos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="dentistAdd.html" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-user-md fa-2x mb-2"></i><br>
+                                Agregar Odontólogo
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="patientAdd.html" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-user-injured fa-2x mb-2"></i><br>
+                                Agregar Paciente
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="appointmentAdd.html" class="btn btn-outline-warning btn-block">
+                                <i class="fas fa-calendar-plus fa-2x mb-2"></i><br>
+                                Agregar Turno
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="appointmentList.html" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-list fa-2x mb-2"></i><br>
+                                Ver Turnos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Verificar autenticación
+    if (!AuthService.isAuthenticated()) {
+        AuthService.redirectToLogin();
+    }
+
+    // Cargar estadísticas del dashboard
+    async function loadDashboardStats() {
+        try {
+            // Cargar contador de odontólogos
+            const dentistsResponse = await AuthService.makeAuthenticatedRequest(
+                `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.DENTISTS}`
+            );
+            const dentists = await dentistsResponse.json();
+            document.getElementById('dentistsCount').textContent = dentists.length;
+
+            // Cargar contador de pacientes
+            const patientsResponse = await AuthService.makeAuthenticatedRequest(
+                `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.PATIENTS}`
+            );
+            const patients = await patientsResponse.json();
+            document.getElementById('patientsCount').textContent = patients.length;
+
+            // Cargar contador de turnos (placeholder por ahora)
+            document.getElementById('appointmentsCount').textContent = '0';
+            document.getElementById('totalAppointments').textContent = '0';
+
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            showAlert('Error al cargar las estadísticas', 'danger');
+        }
+    }
+
+    // Cargar estadísticas cuando la página esté lista
+    document.addEventListener('DOMContentLoaded', loadDashboardStats);
+</script>
+</body>
+</html>

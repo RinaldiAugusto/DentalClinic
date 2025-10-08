@@ -1,0 +1,69 @@
+/* css/styles.css - ESTILOS BASE */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: var(--primary-color) !important;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.table th {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
