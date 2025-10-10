@@ -47,9 +47,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
             if (jwtService.validateToken(jwt, userDetails)) {
-                // EXTRAER ROLES DEL TOKEN Y CREAR AUTHORITIES
+                // EXTRAER ROLES DEL TOKEN - CON MANEJO DE NULLS
                 List<String> roles = jwtService.extractRoles(jwt);
-                var authorities = roles.stream()
+
+                var authorities = roles != null ? roles.stream()
                         .map(role -> {
                             // Asegurar que el rol tenga el formato correcto (ROLE_ prefix)
                             if (role.startsWith("ROLE_")) {
@@ -58,13 +59,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 return new SimpleGrantedAuthority("ROLE_" + role);
                             }
                         })
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList()) : userDetails.getAuthorities(); // Fallback a authorities del UserDetails
 
                 // DEBUG: Agregar logs para ver qué está pasando
-                System.out.println("🔐 User: " + userEmail);
-                System.out.println("🎭 Roles from token: " + roles);
-                System.out.println("🔑 Authorities: " + authorities);
-                System.out.println("🌐 Request to: " + request.getRequestURI());
+                System.out.println("🔐 JWT FILTER - User: " + userEmail);
+                System.out.println("🎭 JWT FILTER - Roles from token: " + roles);
+                System.out.println("🔑 JWT FILTER - Authorities: " + authorities);
+                System.out.println("🌐 JWT FILTER - Request to: " + request.getRequestURI());
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -73,7 +74,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println("✅ JWT FILTER - Authentication set successfully for user: " + userEmail);
+            } else {
+                System.out.println("❌ JWT FILTER - Token validation failed for user: " + userEmail);
             }
+        } else {
+            System.out.println("⚠️ JWT FILTER - No authentication set. UserEmail: " + userEmail + ", Existing auth: " +
+                    (SecurityContextHolder.getContext().getAuthentication() != null));
         }
         filterChain.doFilter(request, response);
     }

@@ -25,12 +25,16 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // Usar los authorities que ya incluyen "ROLE_"
-        claims.put("roles", userDetails.getAuthorities().stream()
+        // EXTRAER ROLES CORRECTAMENTE - usar getAuthorities() que ya incluye "ROLE_"
+        List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
 
+        claims.put("roles", roles);
         claims.put("generatedAt", new Date());
+
+        System.out.println("🎫 JWT SERVICE - Generating token for user: " + userDetails.getUsername());
+        System.out.println("🎫 JWT SERVICE - Roles included in token: " + roles);
 
         return createToken(claims, userDetails.getUsername());
     }
@@ -45,11 +49,18 @@ public class JwtService {
                 .compact();
     }
 
-    // MÉTODO PARA EXTRAER ROLES DEL TOKEN - CORREGIDO
+    // MÉTODO PARA EXTRAER ROLES DEL TOKEN - MEJORADO CON MANEJO DE ERRORES
     @SuppressWarnings("unchecked")
     public List<String> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        return (List<String>) claims.get("roles");
+        try {
+            Claims claims = extractAllClaims(token);
+            List<String> roles = (List<String>) claims.get("roles");
+            System.out.println("🎫 JWT SERVICE - Extracted roles from token: " + roles);
+            return roles;
+        } catch (Exception e) {
+            System.out.println("❌ JWT SERVICE - Error extracting roles from token: " + e.getMessage());
+            return null;
+        }
     }
 
     private Key getSignKey() {
@@ -84,10 +95,10 @@ public class JwtService {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        System.out.println("🎫 JWT SERVICE - Token validation for " + username + ": " + isValid);
+        return isValid;
     }
-
-    // En JwtService.java - AGREGA este método:
 
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
