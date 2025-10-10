@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Agregar Odontólogo - Clínica Dental</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="../config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dentists.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="../dashboard.html">
+        <i class="fas fa-tooth mr-2"></i>Clínica Dental
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="../dashboard.html">
+                    <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item dropdown active">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user-md mr-1"></i>Odontólogos
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="list.html">
+                        <i class="fas fa-list mr-2"></i>Listar Odontólogos
+                    </a>
+                    <a class="dropdown-item active" href="add.html">
+                        <i class="fas fa-plus mr-2"></i>Agregar Odontólogo
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../patients/list.html">
+                    <i class="fas fa-user-injured mr-1"></i>Pacientes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../appointments/list.html">
+                    <i class="fas fa-calendar-check mr-1"></i>Turnos
+                </a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user-circle mr-1"></i>Usuario
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="../profile.html">
+                        <i class="fas fa-user mr-2"></i>Mi Perfil
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" onclick="AuthService.logout()">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus mr-2"></i>Agregar Nuevo Odontólogo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="addDentistForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="registration" class="font-weight-bold">
+                                        <i class="fas fa-id-card mr-1"></i>Matrícula:
+                                    </label>
+                                    <input type="text" class="form-control" id="registration"
+                                           placeholder="Ingrese la matrícula" required
+                                           pattern="[A-Za-z0-9]{3,20}"
+                                           title="La matrícula debe tener entre 3 y 20 caracteres alfanuméricos">
+                                    <small class="form-text text-muted">
+                                        Ejemplo: ABC123, 456XYZ
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="font-weight-bold">
+                                        <i class="fas fa-signature mr-1"></i>Nombre:
+                                    </label>
+                                    <input type="text" class="form-control" id="name"
+                                           placeholder="Ingrese el nombre" required
+                                           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]{2,50}"
+                                           title="Solo letras y espacios (2-50 caracteres)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lastName" class="font-weight-bold">
+                                        <i class="fas fa-signature mr-1"></i>Apellido:
+                                    </label>
+                                    <input type="text" class="form-control" id="lastName"
+                                           placeholder="Ingrese el apellido" required
+                                           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]{2,50}"
+                                           title="Solo letras y espacios (2-50 caracteres)">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Información:</label>
+                                    <div class="border rounded p-3 bg-light">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Todos los campos son obligatorios. El sistema validará
+                                            automáticamente el formato de los datos.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-success btn-lg btn-block" id="submitButton">
+                                <i class="fas fa-save mr-2"></i>Guardar Odontólogo
+                            </button>
+                            <a href="list.html" class="btn btn-outline-secondary btn-block mt-2">
+                                <i class="fas fa-arrow-left mr-2"></i>Volver a la Lista
+                            </a>
+                        </div>
+                    </form>
+
+                    <div id="response" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Verificar autenticación
+    if (!AuthService.isAuthenticated()) {
+        AuthService.redirectToLogin();
+    }
+
+    // Manejar el envío del formulario
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addDentistForm');
+        const submitButton = document.getElementById('submitButton');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Validar formulario
+            if (!form.checkValidity()) {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            // Obtener datos del formulario
+            const dentistData = {
+                registration: document.getElementById('registration').value.trim(),
+                name: document.getElementById('name').value.trim(),
+                lastName: document.getElementById('lastName').value.trim()
+            };
+
+            // Validaciones adicionales
+            if (dentistData.registration.length < 3) {
+                showResponse('La matrícula debe tener al menos 3 caracteres', 'danger');
+                return;
+            }
+
+            if (dentistData.name.length < 2) {
+                showResponse('El nombre debe tener al menos 2 caracteres', 'danger');
+                return;
+            }
+
+            if (dentistData.lastName.length < 2) {
+                showResponse('El apellido debe tener al menos 2 caracteres', 'danger');
+                return;
+            }
+
+            // Deshabilitar botón y mostrar loading
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
+
+            try {
+                console.log('Enviando datos:', dentistData);
+
+                // Crear odontólogo
+                const result = await DentistService.createDentist(dentistData);
+                console.log('Odontólogo creado:', result);
+
+                showResponse('✅ Odontólogo agregado exitosamente!', 'success');
+
+                // Limpiar formulario
+                form.reset();
+                form.classList.remove('was-validated');
+
+                // Redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'list.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error completo:', error);
+                console.log('Error name:', error.name);
+                console.log('Error message:', error.message);
+                console.log('Error stack:', error.stack);
+
+                let errorMessage = 'Error al agregar odontólogo';
+
+                // Mostrar el error específico
+                if (error.message.includes('response.json is not a function')) {
+                    errorMessage = 'El servidor devolvió una respuesta no válida (no JSON)';
+                } else if (error.message.includes('409') || error.message.includes('already exists')) {
+                    errorMessage = 'Ya existe un odontólogo con esa matrícula';
+                } else if (error.message.includes('400')) {
+                    errorMessage = 'Datos inválidos. Verifique la información';
+                } else if (error.message.includes('401') || error.message.includes('403')) {
+                    errorMessage = 'No tiene permisos para realizar esta acción';
+                } else {
+                    errorMessage = 'Error: ' + error.message;
+                }
+
+                showResponse('❌ ' + errorMessage, 'danger');
+
+            } finally {
+                // Rehabilitar botón
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save mr-2"></i>Guardar Odontólogo';
+            }
+        });
+
+        // Validación en tiempo real
+        const inputs = form.querySelectorAll('input[required]');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.checkValidity()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+    });
+
+    function showResponse(message, type) {
+        const responseDiv = document.getElementById('response');
+        responseDiv.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `;
+
+        // Auto-remove after 5 seconds for success messages
+        if (type === 'success') {
+            setTimeout(() => {
+                const alert = responseDiv.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 5000);
+        }
+    }
+</script>
+
+<style>
+    .form-control.is-valid {
+        border-color: #28a745;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    }
+</style>
+</body>
+</html>

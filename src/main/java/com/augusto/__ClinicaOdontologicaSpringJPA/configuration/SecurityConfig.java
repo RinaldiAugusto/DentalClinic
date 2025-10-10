@@ -43,7 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ AGREGAR ESTA LÍNEA
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
@@ -51,13 +51,12 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
+                        // ✅ ODONTÓLOGOS - PERMITIR A CUALQUIER USUARIO AUTENTICADO
+                        .requestMatchers("/dentists/**").authenticated()
+
                         // PROTECCIÓN POR ROLES
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/patients/create", "/patients/update/**", "/patients/delete/**").hasRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/dentists/create", "/dentists/update/**", "/dentists/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/appointments/create", "/appointments/update/**", "/appointments/delete/**").hasRole("ADMIN")
                         .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
 
                         .anyRequest().authenticated()
