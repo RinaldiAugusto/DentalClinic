@@ -44,7 +44,7 @@ public class AuthService implements IAuthService {
             // Generar tokens JWT
             User user = (User) authentication.getPrincipal();
             String jwt = jwtService.generateToken(user);
-            String refreshToken = jwtService.generateRefreshToken(user); // ✅ DECLARAR refreshToken
+            String refreshToken = jwtService.generateToken(user); // ✅ DECLARAR refreshToken
 
             // ✅ ACTUALIZAR USUARIO CON REFRESH TOKEN
             user.setRefreshToken(refreshToken);
@@ -94,7 +94,7 @@ public class AuthService implements IAuthService {
 
             // ✅ GENERAR AMBOS TOKENS
             String jwt = jwtService.generateToken(savedUser);
-            String refreshToken = jwtService.generateRefreshToken(savedUser); // ✅ DECLARAR refreshToken
+            String refreshToken = jwtService.generateToken(savedUser); // ✅ DECLARAR refreshToken
 
             // ✅ ACTUALIZAR USUARIO CON REFRESH TOKEN
             savedUser.setRefreshToken(refreshToken);
@@ -140,7 +140,7 @@ public class AuthService implements IAuthService {
 
             // Generar nuevos tokens
             String newAccessToken = jwtService.generateToken(user);
-            String newRefreshToken = jwtService.generateRefreshToken(user);
+            String newRefreshToken = jwtService.generateToken(user);
 
             // Actualizar refresh token en base de datos
             user.setRefreshToken(newRefreshToken);
