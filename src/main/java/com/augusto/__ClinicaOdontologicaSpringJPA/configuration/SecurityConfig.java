@@ -13,8 +13,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -26,14 +26,14 @@ public class SecurityConfig {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 
-    // ✅ AGREGAR ESTE MÉTODO PARA CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // Permite todos los orígenes
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // ✅ IMPORTANTE
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -47,18 +47,24 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
-                        .requestMatchers("/auth/**", "/public/**").permitAll()
+                        // ✅ ENDPOINTS PÚBLICOS
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // ✅ ODONTÓLOGOS - PERMITIR A ADMIN Y USER
-                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
+                        // ✅ TEMPORAL: PERMITIR TODO PARA DEBUGGING - LUEGO CAMBIAR
+                        .requestMatchers("/dentists/**").permitAll()
+                        .requestMatchers("/patients/**").permitAll()
+                        .requestMatchers("/appointments/**").permitAll()
 
-                        // ✅ PROTECCIÓN POR ROLES - TODOS CON hasAnyRole
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+                        /*
+                        // ✅ CONFIGURACIÓN FINAL (COMENTADA TEMPORALMENTE)
+                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        */
 
                         .anyRequest().authenticated()
                 )

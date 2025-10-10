@@ -31,11 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        System.out.println("=== 🔍 JWT FILTER START ===");
+        System.out.println("🌐 Request: " + request.getMethod() + " " + request.getRequestURI());
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("⚠️ No Bearer token found - proceeding without authentication");
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,48 +47,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
 
+        System.out.println("📧 Extracted user from token: " + userEmail);
+
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            try {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                System.out.println("👤 UserDetails loaded: " + userDetails.getUsername());
 
-            if (jwtService.validateToken(jwt, userDetails)) {
-                // EXTRAER ROLES DEL TOKEN - CON MANEJO ROBUSTO
-                List<String> roles = jwtService.extractRoles(jwt);
+                if (jwtService.validateToken(jwt, userDetails)) {
+                    List<String> roles = jwtService.extractRoles(jwt);
 
-                var authorities = roles != null ? roles.stream()
-                        .map(role -> {
-                            // Asegurar que el rol tenga el formato correcto
-                            if (role.startsWith("ROLE_")) {
-                                return new SimpleGrantedAuthority(role);
-                            } else {
-                                return new SimpleGrantedAuthority("ROLE_" + role);
-                            }
-                        })
-                        .collect(Collectors.toList()) : userDetails.getAuthorities().stream()
-                        .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
-                        .collect(Collectors.toList());
+                    var authorities = roles != null ? roles.stream()
+                            .map(role -> {
+                                if (role.startsWith("ROLE_")) {
+                                    return new SimpleGrantedAuthority(role);
+                                } else {
+                                    return new SimpleGrantedAuthority("ROLE_" + role);
+                                }
+                            })
+                            .collect(Collectors.toList()) : userDetails.getAuthorities().stream()
+                            .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
+                            .collect(Collectors.toList());
 
-                // DEBUG DETALLADO
-                System.out.println("=== 🔐 JWT FILTER DEBUG ===");
-                System.out.println("📧 User: " + userEmail);
-                System.out.println("🎭 Roles from token: " + roles);
-                System.out.println("🔑 Final authorities: " + authorities);
-                System.out.println("🌐 Request URI: " + request.getRequestURI());
-                System.out.println("🛡️ UserDetails authorities: " + userDetails.getAuthorities());
+                    System.out.println("🎭 Final authorities: " + authorities);
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        authorities
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            authorities
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                System.out.println("✅ Authentication set successfully!");
-                System.out.println("=============================");
-            } else {
-                System.out.println("❌ JWT FILTER - Token validation failed for user: " + userEmail);
+                    System.out.println("✅ Authentication SUCCESS for: " + userEmail);
+                } else {
+                    System.out.println("❌ Token validation FAILED for: " + userEmail);
+                }
+            } catch (Exception e) {
+                System.out.println("💥 ERROR in JWT filter: " + e.getMessage());
+                // No bloquear la request, solo continuar sin autenticación
             }
+        } else {
+            System.out.println("ℹ️ Authentication already exists or no user email");
         }
+
+        System.out.println("=== 🔍 JWT FILTER END ===");
         filterChain.doFilter(request, response);
     }
 }

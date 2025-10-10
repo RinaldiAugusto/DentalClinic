@@ -121,37 +121,33 @@ public class AuthService implements IAuthService {
     @Override
     public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequest) {
         try {
-            System.out.println("🔄 Intentando refresh token: " + refreshTokenRequest.getRefreshToken());
+            System.out.println("🔄 REFRESH TOKEN REQUEST");
 
-            // Buscar usuario por refresh token
+            // ✅ BUSCAR USUARIO POR REFRESH TOKEN
             User user = userRepository.findByRefreshToken(refreshTokenRequest.getRefreshToken())
                     .orElseThrow(() -> {
-                        System.out.println("❌ Refresh token no encontrado en BD");
+                        System.out.println("❌ Refresh token not found in database");
                         return new RuntimeException("Invalid refresh token");
                     });
 
-            System.out.println("✅ Usuario encontrado: " + user.getEmail());
+            System.out.println("✅ User found for refresh: " + user.getEmail());
 
-            // Validar que el refresh token coincida
-            if (!user.getRefreshToken().equals(refreshTokenRequest.getRefreshToken())) {
-                System.out.println("❌ Refresh token no coincide");
-                throw new RuntimeException("Invalid refresh token");
-            }
-
-            // Generar nuevos tokens
+            // ✅ GENERAR NUEVO ACCESS TOKEN (no nuevo refresh token)
             String newAccessToken = jwtService.generateToken(user);
-            String newRefreshToken = jwtService.generateToken(user);
 
-            // Actualizar refresh token en base de datos
+            // ✅ MANTENER EL MISMO REFRESH TOKEN (o generar uno nuevo si prefieres)
+            String newRefreshToken = jwtService.generateRefreshToken(user);
+
+            // ✅ ACTUALIZAR EN BASE DE DATOS
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);
 
-            System.out.println("✅ Nuevos tokens generados para: " + user.getEmail());
+            System.out.println("✅ New tokens generated for: " + user.getEmail());
 
             return new RefreshTokenResponseDTO(newAccessToken, newRefreshToken);
 
         } catch (Exception e) {
-            System.out.println("❌ Error en refresh token: " + e.getMessage());
+            System.out.println("❌ Refresh token error: " + e.getMessage());
             throw new RuntimeException("Error refreshing token: " + e.getMessage());
         }
     }
