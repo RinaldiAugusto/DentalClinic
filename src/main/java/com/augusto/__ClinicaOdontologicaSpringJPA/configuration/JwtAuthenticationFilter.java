@@ -47,25 +47,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
             if (jwtService.validateToken(jwt, userDetails)) {
-                // EXTRAER ROLES DEL TOKEN - CON MANEJO DE NULLS
+                // EXTRAER ROLES DEL TOKEN - CON MANEJO ROBUSTO
                 List<String> roles = jwtService.extractRoles(jwt);
 
                 var authorities = roles != null ? roles.stream()
                         .map(role -> {
-                            // Asegurar que el rol tenga el formato correcto (ROLE_ prefix)
+                            // Asegurar que el rol tenga el formato correcto
                             if (role.startsWith("ROLE_")) {
                                 return new SimpleGrantedAuthority(role);
                             } else {
                                 return new SimpleGrantedAuthority("ROLE_" + role);
                             }
                         })
-                        .collect(Collectors.toList()) : userDetails.getAuthorities(); // Fallback a authorities del UserDetails
+                        .collect(Collectors.toList()) : userDetails.getAuthorities().stream()
+                        .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
+                        .collect(Collectors.toList());
 
-                // DEBUG: Agregar logs para ver qué está pasando
-                System.out.println("🔐 JWT FILTER - User: " + userEmail);
-                System.out.println("🎭 JWT FILTER - Roles from token: " + roles);
-                System.out.println("🔑 JWT FILTER - Authorities: " + authorities);
-                System.out.println("🌐 JWT FILTER - Request to: " + request.getRequestURI());
+                // DEBUG DETALLADO
+                System.out.println("=== 🔐 JWT FILTER DEBUG ===");
+                System.out.println("📧 User: " + userEmail);
+                System.out.println("🎭 Roles from token: " + roles);
+                System.out.println("🔑 Final authorities: " + authorities);
+                System.out.println("🌐 Request URI: " + request.getRequestURI());
+                System.out.println("🛡️ UserDetails authorities: " + userDetails.getAuthorities());
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -75,13 +79,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                System.out.println("✅ JWT FILTER - Authentication set successfully for user: " + userEmail);
+                System.out.println("✅ Authentication set successfully!");
+                System.out.println("=============================");
             } else {
                 System.out.println("❌ JWT FILTER - Token validation failed for user: " + userEmail);
             }
-        } else {
-            System.out.println("⚠️ JWT FILTER - No authentication set. UserEmail: " + userEmail + ", Existing auth: " +
-                    (SecurityContextHolder.getContext().getAuthentication() != null));
         }
         filterChain.doFilter(request, response);
     }

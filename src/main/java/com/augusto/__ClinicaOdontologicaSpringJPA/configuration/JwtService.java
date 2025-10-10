@@ -20,40 +20,46 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    // SECRET KEY MÁS SIMPLE Y CONFIABLE
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private static final String SECRET_KEY = "586E3272357538782F413F4428472B4B6250655368566B597033733676397924";
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
+        Map<String, Object> claims = new HashMap<>();
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        // EXTRAER ROLES CORRECTAMENTE
+        // EXTRAER ROLES CORRECTAMENTE - usar getAuthorities()
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        extraClaims.put("roles", roles);
+        claims.put("roles", roles);
+        claims.put("generatedAt", new Date());
 
-        System.out.println("🎫 JWT SERVICE - Generating token for: " + userDetails.getUsername());
-        System.out.println("🎫 JWT SERVICE - Roles: " + roles);
-        System.out.println("🎫 JWT SERVICE - Secret Key: " + SECRET_KEY.substring(0, 10) + "...");
+        System.out.println("=== 🎫 JWT SERVICE DEBUG ===");
+        System.out.println("📧 Generating token for: " + userDetails.getUsername());
+        System.out.println("🎭 Roles included in token: " + roles);
+        System.out.println("🛡️ UserDetails class: " + userDetails.getClass().getSimpleName());
+        System.out.println("=============================");
 
+        return createToken(claims, userDetails.getUsername());
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // MÉTODO CORREGIDO PARA EXTRAER ROLES
+    // MÉTODO PARA EXTRAER ROLES DEL TOKEN - MEJORADO
     @SuppressWarnings("unchecked")
     public List<String> extractRoles(String token) {
         try {
             Claims claims = extractAllClaims(token);
-            return (List<String>) claims.get("roles");
+            List<String> roles = (List<String>) claims.get("roles");
+            System.out.println("🎫 JWT SERVICE - Extracted roles from token: " + roles);
+            return roles;
         } catch (Exception e) {
             System.out.println("❌ JWT SERVICE - Error extracting roles: " + e.getMessage());
             return null;
@@ -61,14 +67,8 @@ public class JwtService {
     }
 
     private Key getSignKey() {
-        try {
-            byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-            System.out.println("🎫 JWT SERVICE - Key bytes length: " + keyBytes.length);
-            return Keys.hmacShaKeyFor(keyBytes);
-        } catch (Exception e) {
-            System.out.println("❌ JWT SERVICE - Error creating sign key: " + e.getMessage());
-            throw e;
-        }
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUsername(String token) {
@@ -85,26 +85,11 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        System.out.println("🎫 JWT SERVICE - Extracting claims from token");
-        System.out.println("🎫 JWT SERVICE - Token: " + token.substring(0, 50) + "...");
-
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSignKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            System.out.println("🎫 JWT SERVICE - Claims extracted successfully");
-            System.out.println("🎫 JWT SERVICE - Subject: " + claims.getSubject());
-            System.out.println("🎫 JWT SERVICE - Roles: " + claims.get("roles"));
-
-            return claims;
-        } catch (Exception e) {
-            System.out.println("❌ JWT SERVICE - Error parsing token: " + e.getMessage());
-            System.out.println("❌ JWT SERVICE - Error class: " + e.getClass().getName());
-            throw e;
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -112,14 +97,23 @@ public class JwtService {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        try {
-            final String username = extractUsername(token);
-            boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-            System.out.println("🎫 JWT SERVICE - Token validation: " + isValid + " for user: " + username);
-            return isValid;
-        } catch (Exception e) {
-            System.out.println("❌ JWT SERVICE - Token validation failed: " + e.getMessage());
-            return false;
-        }
+        final String username = extractUsername(token);
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        System.out.println("🔍 JWT SERVICE - Token validation for " + username + ": " + isValid);
+        return isValid;
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("tokenType", "refresh");
+        claims.put("generatedAt", new Date());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }
