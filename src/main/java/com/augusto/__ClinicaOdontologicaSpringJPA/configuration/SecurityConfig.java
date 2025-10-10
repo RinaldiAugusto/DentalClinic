@@ -47,16 +47,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
                         .requestMatchers("/auth/**", "/public/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // ✅ SEGURIDAD ACTIVADA - VERSIÓN FINAL
-                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
+                        // ✅ USAR hasAnyAuthority CON "ROLE_" PREFIX
+                        .requestMatchers("/dentists/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                        .requestMatchers("/patients/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                        .requestMatchers("/appointments/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated()
                 )
