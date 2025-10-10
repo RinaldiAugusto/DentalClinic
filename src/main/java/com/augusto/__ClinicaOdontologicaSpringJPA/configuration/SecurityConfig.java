@@ -47,26 +47,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ ENDPOINTS PÚBLICOS
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                                // ✅ TEMPORAL: PERMITIR TODO - ELIMINAR SEGURIDAD TEMPORALMENTE
+                                .anyRequest().permitAll()
 
-                        // ✅ TEMPORAL: PERMITIR TODO PARA DEBUGGING - LUEGO CAMBIAR
-                        .requestMatchers("/dentists/**").permitAll()
-                        .requestMatchers("/patients/**").permitAll()
-                        .requestMatchers("/appointments/**").permitAll()
-
-                        /*
-                        // ✅ CONFIGURACIÓN FINAL (COMENTADA TEMPORALMENTE)
-                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        */
-
-                        .anyRequest().authenticated()
+                    /*
+                    // COMENTAR TODO ESTO TEMPORALMENTE:
+                    .requestMatchers("/auth/**", "/public/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+                    .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
+                    .anyRequest().authenticated()
+                    */
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

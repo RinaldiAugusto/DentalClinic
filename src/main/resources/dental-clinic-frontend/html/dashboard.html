@@ -5,242 +5,313 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="config.js"></script>
-    <script src="js/auth.js"></script>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="dashboard.html">
-        <i class="fas fa-tooth mr-2"></i>Clínica Dental
-    </a>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="dashboard.html">
-                    <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-user-md mr-1"></i>Odontólogos
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="dentistList.html">
-                        <i class="fas fa-list mr-2"></i>Listar Odontólogos
-                    </a>
-                    <a class="dropdown-item" href="dentistAdd.html">
-                        <i class="fas fa-plus mr-2"></i>Agregar Odontólogo
-                    </a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-user-injured mr-1"></i>Pacientes
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="patientList.html">
-                        <i class="fas fa-list mr-2"></i>Listar Pacientes
-                    </a>
-                    <a class="dropdown-item" href="patientAdd.html">
-                        <i class="fas fa-plus mr-2"></i>Agregar Paciente
-                    </a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-calendar-check mr-1"></i>Turnos
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="appointmentList.html">
-                        <i class="fas fa-list mr-2"></i>Listar Turnos
-                    </a>
-                    <a class="dropdown-item" href="appointmentAdd.html">
-                        <i class="fas fa-plus mr-2"></i>Agregar Turno
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-user-circle mr-1"></i>Usuario
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="profile.html">
-                        <i class="fas fa-user mr-2"></i>Mi Perfil
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" onclick="AuthService.logout()">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
-                    </a>
-                </div>
-            </li>
-        </ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">👨‍⚕️ Clínica Dental</a>
+    <div class="navbar-nav ml-auto">
+        <span class="navbar-text mr-3" id="userEmail"></span>
+        <button class="btn btn-outline-light btn-sm" onclick="logout()">Cerrar Sesión</button>
     </div>
 </nav>
 
-<!-- Main Content -->
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4">Dashboard - Sistema de Gestión</h2>
-        </div>
-    </div>
+<div class="container mt-4">
+    <h2>Dashboard - Sistema de Gestión</h2>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 id="dentistsCount">0</h4>
-                            <p>Odontólogos</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-user-md fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Sección de Odontólogos -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>🦷 Gestión de Odontólogos</h5>
         </div>
+        <div class="card-body">
+            <button class="btn btn-primary mb-3" onclick="listarOdontologos()">
+                🔄 Actualizar Lista
+            </button>
+            <button class="btn btn-success mb-3" data-toggle="modal" data-target="#crearOdontologoModal">
+                ➕ Crear Odontólogo
+            </button>
 
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 id="patientsCount">0</h4>
-                            <p>Pacientes</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-user-injured fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 id="appointmentsCount">0</h4>
-                            <p>Turnos Hoy</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-calendar-day fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 id="totalAppointments">0</h4>
-                            <p>Total Turnos</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-calendar-alt fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
+            <div id="dentists-container" class="mt-3">
+                <p class="text-muted">Haz clic en "Actualizar Lista" para ver los odontólogos</p>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Acciones Rápidas</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <a href="dentistAdd.html" class="btn btn-outline-primary btn-block">
-                                <i class="fas fa-user-md fa-2x mb-2"></i><br>
-                                Agregar Odontólogo
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="patientAdd.html" class="btn btn-outline-success btn-block">
-                                <i class="fas fa-user-injured fa-2x mb-2"></i><br>
-                                Agregar Paciente
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="appointmentAdd.html" class="btn btn-outline-warning btn-block">
-                                <i class="fas fa-calendar-plus fa-2x mb-2"></i><br>
-                                Agregar Turno
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="appointmentList.html" class="btn btn-outline-info btn-block">
-                                <i class="fas fa-list fa-2x mb-2"></i><br>
-                                Ver Turnos
-                            </a>
-                        </div>
+    <!-- Información del Usuario -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>👤 Información de Sesión</h5>
+        </div>
+        <div class="card-body">
+            <div id="userInfo">
+                <p><strong>Email:</strong> <span id="infoEmail"></span></p>
+                <p><strong>Token:</strong> <span id="tokenPreview"></span></p>
+                <p><strong>Estado:</strong> <span class="badge badge-success" id="connectionStatus">Conectado</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear Odontólogo -->
+<div class="modal fade" id="crearOdontologoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Nuevo Odontólogo</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="crearOdontologoForm">
+                    <div class="form-group">
+                        <label for="dentistName">Nombre:</label>
+                        <input type="text" class="form-control" id="dentistName" required>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="dentistLastName">Apellido:</label>
+                        <input type="text" class="form-control" id="dentistLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dentistLicense">Matrícula:</label>
+                        <input type="text" class="form-control" id="dentistLicense" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="crearOdontologo()">Crear</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Verificar autenticación
-    if (!AuthService.isAuthenticated()) {
-        AuthService.redirectToLogin();
-    }
+    // CONFIGURACIÓN
+    const API_BASE_URL = 'https://dental-clinic-backend-53ys.onrender.com';
 
-    // Cargar estadísticas del dashboard
-    async function loadDashboardStats() {
+    // VERIFICAR AUTENTICACIÓN AL CARGAR
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (!token) {
+            alert('No estás autenticado. Redirigiendo al login...');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Mostrar información del usuario
+        document.getElementById('userEmail').textContent = userEmail || 'Usuario';
+        document.getElementById('infoEmail').textContent = userEmail || 'No disponible';
+        document.getElementById('tokenPreview').textContent = token.substring(0, 30) + '...';
+
+        console.log('✅ Dashboard cargado - Usuario autenticado:', userEmail);
+        console.log('🔐 Token:', token.substring(0, 50) + '...');
+
+        // Cargar datos iniciales
+        listarOdontologos();
+    });
+
+    // 🦷 FUNCIÓN CORREGIDA: LISTAR ODONTÓLOGOS
+    async function listarOdontologos() {
+        const token = localStorage.getItem('token');
+
+        console.log('🔍 Iniciando listado de odontólogos...');
+        console.log('🔐 Token usado:', token ? token.substring(0, 30) + '...' : 'NO TOKEN');
+
+        if (!token) {
+            alert('No estás autenticado');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const container = document.getElementById('dentists-container');
+        container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p class="mt-2">Cargando odontólogos...</p></div>';
+
         try {
-            // Cargar contador de odontólogos
-            const dentistsResponse = await AuthService.makeAuthenticatedRequest(
-                `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.DENTISTS}`
-            );
-            const dentists = await dentistsResponse.json();
-            document.getElementById('dentistsCount').textContent = dentists.length;
+            console.log('🌐 Haciendo request a:', `${API_BASE_URL}/dentists`);
 
-            // Cargar contador de pacientes
-            const patientsResponse = await AuthService.makeAuthenticatedRequest(
-                `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.PATIENTS}`
-            );
-            const patients = await patientsResponse.json();
-            document.getElementById('patientsCount').textContent = patients.length;
+            const response = await fetch(`${API_BASE_URL}/dentists`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-            // Cargar contador de turnos (placeholder por ahora)
-            document.getElementById('appointmentsCount').textContent = '0';
-            document.getElementById('totalAppointments').textContent = '0';
+            console.log('📊 Response status:', response.status);
+            console.log('📊 Response ok:', response.ok);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Error response:', errorText);
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            const dentists = await response.json();
+            console.log('✅ Odontólogos obtenidos:', dentists);
+
+            // Mostrar los odontólogos
+            mostrarOdontologos(dentists);
 
         } catch (error) {
-            console.error('Error loading dashboard stats:', error);
-            showAlert('Error al cargar las estadísticas', 'danger');
+            console.error('💥 Error completo:', error);
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Error al cargar odontólogos:</strong><br>
+                    ${error.message}
+                    <br><br>
+                    <button class="btn btn-sm btn-warning" onclick="listarOdontologos()">Reintentar</button>
+                </div>
+            `;
         }
     }
 
-    // Cargar estadísticas cuando la página esté lista
-    document.addEventListener('DOMContentLoaded', loadDashboardStats);
+    // 🦷 FUNCIÓN PARA MOSTRAR ODONTÓLOGOS
+    function mostrarOdontologos(dentists) {
+        const container = document.getElementById('dentists-container');
+
+        if (!dentists || dentists.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info">
+                    No hay odontólogos registrados.
+                    <button class="btn btn-sm btn-success ml-2" data-toggle="modal" data-target="#crearOdontologoModal">
+                        Crear el primero
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Matrícula</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        dentists.forEach(dentist => {
+            html += `
+                <tr>
+                    <td>${dentist.name || 'N/A'}</td>
+                    <td>${dentist.lastName || 'N/A'}</td>
+                    <td><span class="badge badge-secondary">${dentist.license || 'N/A'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editarOdontologo(${dentist.id})">✏️</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarOdontologo(${dentist.id})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted">Total: ${dentists.length} odontólogo(s)</p>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    // 🦷 FUNCIÓN PARA CREAR ODONTÓLOGO
+    async function crearOdontologo() {
+        const token = localStorage.getItem('token');
+        const name = document.getElementById('dentistName').value;
+        const lastName = document.getElementById('dentistLastName').value;
+        const license = document.getElementById('dentistLicense').value;
+
+        if (!name || !lastName || !license) {
+            alert('Complete todos los campos');
+            return;
+        }
+
+        try {
+            console.log('🦷 Creando odontólogo...');
+
+            const response = await fetch(`${API_BASE_URL}/dentists`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    lastName: lastName,
+                    license: license
+                })
+            });
+
+            console.log('📊 Create response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            const newDentist = await response.json();
+            console.log('✅ Odontólogo creado:', newDentist);
+
+            // Cerrar modal y actualizar lista
+            $('#crearOdontologoModal').modal('hide');
+            document.getElementById('crearOdontologoForm').reset();
+
+            alert('✅ Odontólogo creado exitosamente');
+            listarOdontologos();
+
+        } catch (error) {
+            console.error('💥 Error creando odontólogo:', error);
+            alert('Error al crear odontólogo: ' + error.message);
+        }
+    }
+
+    // 🦷 FUNCIONES PARA EDITAR Y ELIMINAR (placeholder)
+    function editarOdontologo(id) {
+        alert('Editar odontólogo ID: ' + id + ' (función en desarrollo)');
+    }
+
+    function eliminarOdontologo(id) {
+        if (confirm('¿Está seguro de eliminar este odontólogo?')) {
+            alert('Eliminar odontólogo ID: ' + id + ' (función en desarrollo)');
+        }
+    }
+
+    // 🔐 FUNCIÓN DE LOGOUT
+    function logout() {
+        if (confirm('¿Está seguro de cerrar sesión?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // DEBUG: Probar conexión manualmente desde consola
+    window.debugConnection = function() {
+        const token = localStorage.getItem('token');
+        console.log('🔐 Token:', token);
+        console.log('🌐 API URL:', API_BASE_URL);
+
+        fetch(`${API_BASE_URL}/auth/debug-user`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(r => r.json())
+        .then(data => console.log('🔍 Debug user:', data))
+        .catch(err => console.error('💥 Debug error:', err));
+    };
 </script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </body>
 </html>
