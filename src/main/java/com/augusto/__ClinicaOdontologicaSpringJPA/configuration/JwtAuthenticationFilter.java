@@ -79,6 +79,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
+                    // ✅ ✅ ✅ AGREGÁ EL DEBUG EXTREMO JUSTO AQUÍ ✅ ✅ ✅
+                    System.out.println("=== 🚨 DEBUG EXTREMO - ROLES ===");
+                    System.out.println("📧 User: " + userEmail);
+                    System.out.println("🎭 Roles from token: " + roles);
+                    System.out.println("🔑 Final Authorities: " + authorities);
+                    System.out.println("🛡️ Security Context Auth: " + SecurityContextHolder.getContext().getAuthentication());
+                    System.out.println("🔍 Is Authenticated: " + (SecurityContextHolder.getContext().getAuthentication() != null));
+                    if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                        System.out.println("🎯 Authorities in Context: " +
+                                SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+                    }
+                    System.out.println("=================================");
+
                     System.out.println("✅ Authentication SUCCESS for: " + userEmail);
                 } else {
                     System.out.println("❌ Token validation FAILED for: " + userEmail);
