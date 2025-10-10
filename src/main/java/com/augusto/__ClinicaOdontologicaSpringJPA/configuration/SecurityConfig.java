@@ -51,11 +51,11 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // ✅ ODONTÓLOGOS - PERMITIR A CUALQUIER USUARIO AUTENTICADO
-                        .requestMatchers("/dentists/**").authenticated()
+                        // ✅ ODONTÓLOGOS - PERMITIR A ADMIN Y USER
+                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
 
-                        // PROTECCIÓN POR ROLES
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // ✅ PROTECCIÓN POR ROLES - TODOS CON hasAnyRole
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
 

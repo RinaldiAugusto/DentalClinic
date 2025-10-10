@@ -78,6 +78,12 @@
 
 <!-- Main Content -->
 <div class="container mt-4">
+    <!-- Debug Info -->
+    <div class="alert alert-info mb-4">
+        <h6>🔍 Información del Usuario</h6>
+        <div id="debugInfo">Cargando...</div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -165,6 +171,20 @@
         AuthService.redirectToLogin();
     }
 
+    // Mostrar información del usuario
+    const token = localStorage.getItem('token');
+    if (token) {
+        try {
+            const tokenData = JSON.parse(atob(token.split('.')[1]));
+            document.getElementById('debugInfo').innerHTML = `
+                <strong>Usuario:</strong> ${tokenData.sub}<br>
+                <strong>Rol:</strong> ${tokenData.roles || tokenData.authorities || 'USER'}
+            `;
+        } catch (e) {
+            document.getElementById('debugInfo').innerHTML = 'Error decodificando token';
+        }
+    }
+
     // Manejar el envío del formulario
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('addDentistForm');
@@ -208,11 +228,29 @@
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
 
             try {
-                console.log('Enviando datos:', dentistData);
+                console.log('🦷 Enviando datos:', dentistData);
 
-                // Crear odontólogo
-                const result = await DentistService.createDentist(dentistData);
-                console.log('Odontólogo creado:', result);
+                // Usar fetch directo para mejor control
+                const token = AuthService.getToken();
+                const response = await fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.DENTISTS}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dentistData)
+                });
+
+                console.log('📡 Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log('❌ Error response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Odontólogo creado:', result);
 
                 showResponse('✅ Odontólogo agregado exitosamente!', 'success');
 
@@ -226,17 +264,10 @@
                 }, 2000);
 
             } catch (error) {
-                console.error('Error completo:', error);
-                console.log('Error name:', error.name);
-                console.log('Error message:', error.message);
-                console.log('Error stack:', error.stack);
+                console.error('💥 Error completo:', error);
 
                 let errorMessage = 'Error al agregar odontólogo';
-
-                // Mostrar el error específico
-                if (error.message.includes('response.json is not a function')) {
-                    errorMessage = 'El servidor devolvió una respuesta no válida (no JSON)';
-                } else if (error.message.includes('409') || error.message.includes('already exists')) {
+                if (error.message.includes('409') || error.message.includes('already exists')) {
                     errorMessage = 'Ya existe un odontólogo con esa matrícula';
                 } else if (error.message.includes('400')) {
                     errorMessage = 'Datos inválidos. Verifique la información';

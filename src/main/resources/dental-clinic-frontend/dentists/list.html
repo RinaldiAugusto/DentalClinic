@@ -251,7 +251,9 @@
         });
 
         // Guardar edición
-        document.getElementById('saveEditButton').addEventListener('click', saveDentistEdit);
+        document.getElementById('saveEditButton').addEventListener('click', () => {
+            DentistUI.saveDentistEdit();
+        });
     }
 
     function searchDentists() {

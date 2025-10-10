@@ -91,7 +91,7 @@
     // CONFIGURACIÓN PARA BACKEND REAL
     const CONFIG = {
         API_BASE_URL: 'https://dental-clinic-backend-53ys.onrender.com',
-        USE_MOCK: false  // ← IMPORTANTE: FALSE para usar backend real
+        USE_MOCK: false
     };
 
     // FUNCIONES DE VISIBILIDAD
@@ -121,10 +121,10 @@
         }, 5000);
     }
 
-    // MANEJADOR DE LOGIN CON BACKEND REAL
+    // MANEJADOR DE LOGIN CON DEBUGGING COMPLETO
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Procesando login con backend real...');
+        console.log('🔐 INICIANDO LOGIN CON DEBUG...');
 
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -139,37 +139,80 @@
         boton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Conectando...';
 
         try {
-            console.log('Enviando login a:', `${CONFIG.API_BASE_URL}/auth/login`);
+            console.log('📧 Email:', email);
+            console.log('🔑 Password:', '***' + password.substring(password.length - 2));
+            console.log('🌐 URL:', `${CONFIG.API_BASE_URL}/auth/login`);
+
+            const credentials = { email, password };
+            console.log('📦 Request body:', credentials);
+
+            // Hacer el fetch con timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seg timeout
 
             const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(credentials),
+                signal: controller.signal
             });
 
-            console.log('Response status:', response.status);
+            clearTimeout(timeoutId);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error en el login');
+            console.log('📡 RESPONSE STATUS:', response.status);
+            console.log('📡 RESPONSE OK:', response.ok);
+            console.log('📡 RESPONSE HEADERS:', Object.fromEntries(response.headers.entries()));
+
+            // Leer la respuesta como texto primero
+            const responseText = await response.text();
+            console.log('📡 RAW RESPONSE:', responseText);
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+                console.log('📡 PARSED DATA:', data);
+            } catch (parseError) {
+                console.error('❌ ERROR PARSING JSON:', parseError);
+                console.log('📡 RESPONSE IS NOT JSON, raw:', responseText);
+                throw new Error('El servidor devolvió una respuesta no válida: ' + responseText.substring(0, 100));
             }
 
-            const data = await response.json();
-            console.log('Login exitoso, token recibido');
+            if (response.ok) {
+                console.log('✅ LOGIN EXITOSO');
+                console.log('🔐 TOKEN RECIBIDO:', data.token ? data.token.substring(0, 50) + '...' : 'NO TOKEN');
 
-            // Guardar token
-            localStorage.setItem('token', data.token);
-            mostrarAlerta('✅ ¡Login exitoso! Redirigiendo...', 'success');
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    mostrarAlerta('✅ ¡Login exitoso! Redirigiendo...', 'success');
 
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    throw new Error('No se recibió token del servidor');
+                }
+            } else {
+                console.log('❌ LOGIN FALLIDO - Error data:', data);
+                throw new Error(data.message || data.error || `Error HTTP ${response.status}`);
+            }
 
         } catch (error) {
-            console.error('Error en login:', error);
-            mostrarAlerta('❌ Error: ' + error.message, 'danger');
+            console.error('💥 ERROR COMPLETO EN LOGIN:', error);
+
+            let errorMessage = 'Error en el login';
+            if (error.name === 'AbortError') {
+                errorMessage = 'Timeout: El servidor no respondió en 10 segundos';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Error de conexión: No se pudo conectar al servidor';
+            } else if (error.message.includes('CORS')) {
+                errorMessage = 'Error CORS: El servidor bloqueó la petición';
+            } else {
+                errorMessage = error.message;
+            }
+
+            mostrarAlerta('❌ ' + errorMessage, 'danger');
         } finally {
             boton.disabled = false;
             boton.innerHTML = 'Iniciar Sesión';
@@ -242,13 +285,19 @@
         }
     });
 
-    // VERIFICAR SI YA ESTÁ AUTENTICADO
-//    if (localStorage.getItem('token')) {
-//        window.location.href = 'dashboard.html';
-//    }
+    // VERIFICAR SI YA ESTÁ AUTENTICADO (comentado temporalmente)
+    // if (localStorage.getItem('token')) {
+    //     window.location.href = 'dashboard.html';
+    // }
 
     console.log('✅ Login page cargada - Conectando a backend real');
     console.log('🌐 API URL:', CONFIG.API_BASE_URL);
+
+    // Debug adicional: probar conexión básica
+    fetch(`${CONFIG.API_BASE_URL}/public/health`)
+        .then(response => response.text())
+        .then(text => console.log('🏥 Health check:', text))
+        .catch(err => console.error('💥 Health check failed:', err));
 </script>
 </body>
 </html>

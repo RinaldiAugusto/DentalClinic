@@ -14,31 +14,40 @@ class DentistService {
 
 static async createDentist(dentistData) {
     try {
-        const response = await AuthService.makeAuthenticatedRequest(
-            `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.DENTISTS}`,
-            {
-                method: 'POST',
-                body: JSON.stringify(dentistData)
-            }
-        );
+        console.log('🔧 createDentist llamado con:', dentistData);
 
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+        const token = AuthService.getToken();
+        console.log('🔧 Token disponible:', !!token);
 
-        // Primero obtener el texto de la respuesta
-        const responseText = await response.text();
-        console.log('Raw response:', responseText);
+        const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.DENTISTS}`;
+        console.log('🔧 URL:', url);
 
-        // Intentar parsear como JSON, si falla usar el texto
-        try {
-            return JSON.parse(responseText);
-        } catch (e) {
-            console.log('Response is not JSON, returning text:', responseText);
-            return { message: responseText, status: response.status };
+        // Usar fetch directo para debugging
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(dentistData)
+        });
+
+        console.log('🔧 Response status:', response.status);
+        console.log('🔧 Response ok:', response.ok);
+        console.log('🔧 Response type:', response.type);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log('🔧 Error response:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
+        const result = await response.json();
+        console.log('🔧 Success result:', result);
+        return result;
+
     } catch (error) {
-        console.error('Error creating dentist:', error);
+        console.error('🔧 Error en createDentist:', error);
         throw error;
     }
 }
@@ -139,5 +148,42 @@ class DentistUI {
                 </td>
             </tr>
         `).join('');
+    }
+
+    // Agregá estas funciones a la clase DentistUI en dentists.js
+    static async showEditForm(dentistId) {
+        try {
+            const dentist = await DentistService.getDentistById(dentistId);
+
+            // Llenar el formulario modal
+            document.getElementById('editDentistId').value = dentist.id;
+            document.getElementById('editRegistration').value = dentist.registration;
+            document.getElementById('editName').value = dentist.name;
+            document.getElementById('editLastName').value = dentist.lastName;
+
+            // Mostrar el modal
+            $('#editDentistModal').modal('show');
+
+        } catch (error) {
+            this.showAlert('Error al cargar odontólogo: ' + error.message, 'danger');
+        }
+    }
+
+    static async saveDentistEdit() {
+        const dentistId = document.getElementById('editDentistId').value;
+        const dentistData = {
+            registration: document.getElementById('editRegistration').value,
+            name: document.getElementById('editName').value,
+            lastName: document.getElementById('editLastName').value
+        };
+
+        try {
+            await DentistService.updateDentist(dentistId, dentistData);
+            this.showAlert('✅ Odontólogo actualizado exitosamente', 'success');
+            $('#editDentistModal').modal('hide');
+            loadDentists(); // Recargar la lista
+        } catch (error) {
+            this.showAlert('❌ Error al actualizar odontólogo: ' + error.message, 'danger');
+        }
     }
 }
