@@ -33,7 +33,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(Arrays.asList("Authorization")); // ✅ IMPORTANTE
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -47,17 +47,17 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
                         .requestMatchers("/auth/**", "/public/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // ✅ TEMPORAL: DEBUG - permitir pero con logs
-                        .requestMatchers("/dentists/**").permitAll() // TEMPORAL
-                        // .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER") // ORIGINAL
-
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+                        // ✅ SEGURIDAD ACTIVADA - VERSIÓN FINAL
+                        .requestMatchers("/dentists/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/appointments/**").hasAnyRole("ADMIN", "USER")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
