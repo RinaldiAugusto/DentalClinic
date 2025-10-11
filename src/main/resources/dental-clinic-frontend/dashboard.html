@@ -453,24 +453,36 @@
         console.log('👥 Creando paciente...');
 
         try {
+            // ✅ CORREGIR LOS CAMPOS SEGÚN EL DTO
+            const patientData = {
+                name: name,
+                lastName: lastName,
+                cardIdentity: dni,  // ❌ "dni" → ✅ "cardIdentity"
+                admissionOfDate: new Date().toISOString().split('T')[0], // ✅ Fecha actual
+                address: {  // ✅ Objeto address como pide el DTO
+                    street: address,
+                    number: "123",  // Agregar campo requerido
+                    location: "Ciudad", // Agregar campo requerido
+                    province: "Provincia" // Agregar campo requerido
+                }
+            };
+
+            console.log('📦 Patient data being sent:', patientData);
+
             const response = await fetch(`${API_BASE_URL}/patients`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    name: name,
-                    lastName: lastName,
-                    dni: dni,
-                    address: address
-                })
+                body: JSON.stringify(patientData)
             });
 
             console.log('📡 Create response status:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
+                console.log('❌ Error response:', errorText);
                 throw new Error(`Error ${response.status}: ${errorText}`);
             }
 
