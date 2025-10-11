@@ -114,5 +114,4 @@ public class AppointmentController {
         AppointmentResponseDTO updatedAppointment = iAppointmentServiceImpl.updateAppointment(id, appointmentCreateDTO);
         return ResponseEntity.ok(updatedAppointment);
     }
-//todo ANASHEI
 }

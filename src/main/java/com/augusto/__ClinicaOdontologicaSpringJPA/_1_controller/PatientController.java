@@ -30,7 +30,7 @@ public class PatientController {
         this.iPatientService = iPatientService;
     }
 
-
+    //CREAR
     @PostMapping
     public ResponseEntity<PatientResponseDTO> createPatient(@Valid @RequestBody PatientCreateDTO patientCreateDTO) {
         PatientResponseDTO createdPatient = iPatientService.createPatient(patientCreateDTO);

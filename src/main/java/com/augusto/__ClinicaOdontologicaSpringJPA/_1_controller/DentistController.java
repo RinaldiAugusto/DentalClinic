@@ -25,24 +25,28 @@ public class DentistController {
         this.iDentistService = iDentistService;
     }
 
+    //CREAR
     @PostMapping
     public ResponseEntity<DentistResponseDTO> createDentist(@Valid @RequestBody DentistCreateDTO dentistCreateDTO) {
         DentistResponseDTO createdDentist = iDentistService.createDentist(dentistCreateDTO);
         return new ResponseEntity<>(createdDentist, HttpStatus.CREATED);
     }
 
+    //LISTAR A TODOS
     @GetMapping
     public ResponseEntity<List<DentistResponseDTO>> getAllDentists() {
         List<DentistResponseDTO> dentists = iDentistService.findAllDentistDTOs();
         return ResponseEntity.ok(dentists);
     }
 
+    //BUSCAR POR ID
     @GetMapping("/{id}")
     public ResponseEntity<DentistResponseDTO> getDentistById(@PathVariable Long id) throws ResourceNotFoundException {
         DentistResponseDTO dentist = iDentistService.findDentistDTOById(id);
         return ResponseEntity.ok(dentist);
     }
 
+    //UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<DentistResponseDTO> updateDentist(
             @PathVariable Long id,
@@ -52,6 +56,7 @@ public class DentistController {
         return ResponseEntity.ok(updatedDentist);
     }
 
+    //BORRAR POR ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) throws ResourceNotFoundException {
         iDentistService.delete(id);
