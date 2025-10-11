@@ -47,17 +47,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                                // ✅ PERMITIR TODO TEMPORALMENTE
+                                .anyRequest().permitAll()
 
-                        // ✅ USAR hasAnyAuthority CON "ROLE_" PREFIX
-                        .requestMatchers("/dentists/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .requestMatchers("/patients/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .requestMatchers("/appointments/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-
-                        .anyRequest().authenticated()
+                    /*
+                    // COMENTAR TODO ESTO TEMPORALMENTE:
+                    .requestMatchers("/auth/**", "/public/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers("/dentists/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                    .requestMatchers("/patients/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                    .requestMatchers("/appointments/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                    .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                    .anyRequest().authenticated()
+                    */
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
