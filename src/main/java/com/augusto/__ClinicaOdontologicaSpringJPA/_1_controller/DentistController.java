@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/dentist")
+@RequestMapping("/dentists")
 public class DentistController {
 
     private final IDentistService iDentistService;

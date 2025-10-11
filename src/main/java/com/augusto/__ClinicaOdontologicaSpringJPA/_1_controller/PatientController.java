@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/patient")
+@RequestMapping("/patients")
 @RestController
 public class PatientController {
 
