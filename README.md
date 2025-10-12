@@ -1,118 +1,327 @@
-# 🦷 Dental Clinic Management System
+# 🦷 Dental Clinic Management System - Backend
 
-A complete full-stack web application for managing dental clinics, built with Spring Boot and modern frontend technologies.
+## 📋 Descripción del Proyecto
+Sistema completo de gestión para clínica odontológica desarrollado con **Java Spring Boot**, que proporciona una API RESTful para administrar pacientes, odontólogos, turnos y notificaciones.
 
-![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple)
+---
 
-## 🚀 Live Demo
-
-- **Frontend**: [View Live Demo](https://rinaldiaugusto.github.io/DentalClinic)
-- **Backend API**: `https://dental-clinic-backend-53ys.onrender.com`
-- **Test Credentials**:
-  - Email: `admin@clinica.com`
-  - Password: `admin123`
-
-⚠️ **Note**: The frontend demo requires the backend to be running. Use the test credentials above.
-
-## 📋 Features
-
-### 🔐 Authentication & Security
-- JWT-based authentication
-- Role-based access control (ADMIN/USER)
-- Secure password encryption
-- Session management
-
-### 👥 User Management
-- User registration and login
-- Role-based dashboard access
-- Profile management
-
-### 🦷 Dentists Management
-- Complete CRUD operations
-- License number validation
-- Search and filter functionality
-
-### 👨‍⚕️ Patients Management
-- Patient registration with full details
-- Address management
-- Medical history tracking
-- Advanced search capabilities
-
-### 📅 Appointments System
-- Schedule and manage appointments
-- Real-time availability checking
-- Appointment status tracking (Pending/Confirmed/Completed/Cancelled)
-- Calendar integration
-
-### 📊 Reporting & Analytics
-- Patient medical reports (PDF)
-- Appointment receipts
-- Medical certificates
-- Clinic statistics dashboard
-
-### 🔔 Notifications
-- Appointment reminders
-- Confirmation notifications
-- Notification history
-- Email integration ready
-
-## 🛠️ Technology Stack
+## 🚀 Características Técnicas
 
 ### Backend
-- **Java 17** - Core programming language
-- **Spring Boot 3.0** - Application framework
-- **Spring Security** - Authentication & authorization
-- **Spring Data JPA** - Database operations
-- **PostgreSQL** - Production database
-- **JWT** - Token-based authentication
-- **Maven** - Dependency management
+- **Framework**: Spring Boot 3.x
+- **Java**: 17+
+- **Base de Datos**: H2 (desarrollo) / PostgreSQL (producción)
+- **Autenticación**: JWT (JSON Web Tokens)
+- **Documentación**: OpenAPI 3.0 (Swagger)
+- **Seguridad**: Spring Security
+- **Persistencia**: Spring Data JPA
+- **Validación**: Bean Validation
+- **Testing**: JUnit 5, Mockito
 
 ### Frontend
-- **HTML5** - Markup language
-- **CSS3** - Styling with custom terracota palette
-- **JavaScript (ES6+)** - Client-side functionality
-- **Bootstrap 5** - Responsive design framework
-- **Font Awesome** - Icons
-- **Chart.js** - Statistics and charts
+- **Tecnologías**: HTML5, CSS3, JavaScript (ES6+)
+- **UI Framework**: Bootstrap 4.6
+- **Iconos**: Font Awesome 6.0
+- **HTTP Client**: Fetch API
 
-### DevOps & Tools
-- **Render** - Cloud deployment platform
-- **Git** - Version control
-- **Postman** - API testing
-- **GitHub Pages** - Frontend hosting
+---
 
-## 🗄️ Database Schema
+## 🏗️ Arquitectura del Proyecto
+```
+src/main/java/com/augusto/__ClinicaOdontologicaSpringJPA/
+├── _1_controller/ # Controladores REST
+├── _2_service/ # Lógica de negocio
+│ ├── impl/ # Implementaciones de servicios
+│ └── interfaces/ # Contratos de servicios
+├── _3_repository/ # Acceso a datos (Spring Data JPA)
+├── _4_entity/ # Entidades JPA
+├── dto/ # Objetos de Transferencia de Datos
+├── mapper/ # Mapeadores (MapStruct)
+├── configuration/ # Configuraciones de Spring
+└── exception/ # Manejo de excepciones
+```
 
-![Database Schema](docs/database/schema.png)
+---
 
-Key Entities:
-- **Users** - System users and authentication
-- **Dentists** - Dental professionals
-- **Patients** - Clinic patients with medical history
-- **Appointments** - Scheduling and visit tracking
-- **Addresses** - Patient location information
+## 📚 Módulos Principales
 
-## 🚀 Installation & Setup
+### 1. 🔐 Autenticación y Autorización
+- Registro y login de usuarios
+- Autorización basada en roles (ADMIN, USER)
+- Tokens JWT para autenticación stateless
+- Configuración de seguridad con Spring Security
 
-### Prerequisites
-- Java 17 or higher
-- Maven 3.6+
-- PostgreSQL 12+
-- Node.js (for frontend development)
+### 2. 👥 Gestión de Pacientes
+- CRUD completo de pacientes
+- Validación de datos con Bean Validation
+- Búsqueda por nombre, apellido y DNI
+- Gestión de direcciones embebidas
 
-### Backend Setup
-```bash
-# Clone the repository
-git clone https://github.com/RinaldiAugusto/DentalClinic.git
-cd DentalClinic/backend
+### 3. 🦷 Gestión de Odontólogos
+- CRUD completo de odontólogos
+- Validación de matrícula profesional
+- Búsqueda por nombre, apellido y matrícula
 
-# Configure database in application.properties
+### 4. 📅 Gestión de Turnos
+- Sistema de reserva de turnos
+- Validación de disponibilidad
+- Relaciones Many-to-One con pacientes y odontólogos
+- DTOs para diferentes casos de uso
+
+### 5. 📊 Sistema de Reportes
+- Generación de PDFs (reportes de pacientes, comprobantes)
+- Certificados médicos personalizados
+- Integración con librerías de generación de documentos
+
+### 6. 🔔 Sistema de Notificaciones
+- Recordatorios de turnos
+- Confirmaciones automáticas
+- Historial de notificaciones enviadas
+
+### 7. 📈 Dashboard y Estadísticas
+- Métricas en tiempo real
+- Estadísticas de pacientes mensuales
+- Top odontólogos más solicitados
+- Resumen general de la clínica
+
+---
+
+## 🛠️ Tecnologías y Dependencias
+
+### Backend Dependencies
+```
+<!-- Spring Boot Starters -->
+spring-boot-starter-web
+spring-boot-starter-data-jpa
+spring-boot-starter-security
+spring-boot-starter-validation
+
+<!-- Database -->
+h2 (runtime)
+postgresql (runtime)
+
+<!-- JWT -->
+io.jsonwebtoken:jjwt-api
+io.jsonwebtoken:jjwt-impl
+io.jsonwebtoken:jjwt-jackson
+
+<!-- Documentation -->
+springdoc-openapi-starter-webmvc-ui
+
+<!-- PDF Generation -->
+com.itextpdf:itext7-core
+
+<!-- Testing -->
+spring-boot-starter-test
+```
+
+### Frontend Dependencies
+```
+<!-- UI Framework -->
+Bootstrap 4.6.1
+Font Awesome 6.0.0
+
+<!-- JavaScript -->
+jQuery 3.4.1
+Popper.js 1.16.0
+```
+
+## 🔧 Configuración y Despliegue
+Requisitos Previos
+
+Java 17 o superior
+
+Maven 3.6+
+
+Base de datos H2 (desarrollo) o PostgreSQL (producción)
+
+### Variables de Entorno
+```
+# Database
 spring.datasource.url=jdbc:postgresql://localhost:5432/dental_clinic
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 
-# Run the application
+# JWT
+jwt.secret=your-jwt-secret-key
+jwt.expiration=86400000
+
+# Server
+server.port=8080
+```
+
+### Ejecución Local
+```
+# Clonar el repositorio
+git clone https://github.com/RinaldiAugusto/DentalClinic.git
+
+# Navegar al directorio
+cd DentalClinic
+
+# Compilar y ejecutar
 mvn spring-boot:run
+```
+
+## 📡 API Endpoints
+
+### Autenticación
+```
+POST /api/auth/register       - Registro de usuarios
+POST /api/auth/login          - Login de usuarios
+```
+
+### Pacientes
+```
+GET /patients                 - Listar todos los pacientes
+GET /patients/{id}            - Obtener paciente por ID
+POST /patients                - Crear nuevo paciente
+PUT /patients/{id}            - Actualizar paciente
+DELETE /patients/delete/{id}  - Eliminar paciente
+
+```
+
+### Odontólogos
+```
+GET /dentists                 - Listar todos los odontólogos
+GET /dentists/{id}            - Obtener odontólogo por ID
+POST /dentists                - Crear nuevo odontólogo
+PUT /dentists/{id}            - Actualizar odontólogo
+DELETE /dentists/delete/{id}  - Eliminar odontólogo
+
+```
+
+### Turnos
+```
+GET /appointments/v2          - Listar todos los turnos (v2)
+GET /appointments/v2/{id}     - Obtener turno por ID (v2)
+POST /appointments/v2         - Crear nuevo turno (v2)
+PUT /appointments/v2/{id}     - Actualizar turno (v2)
+DELETE /appointments/v2/{id}  - Eliminar turno (v2)
+
+```
+
+### Reportes PDF
+```
+GET /pdf/patient-report/{patientId}         - Reporte de paciente
+GET /pdf/appointment-receipt/{appointmentId} - Comprobante de turno
+POST /pdf/medical-certificate/{patientId}   - Certificado médico
+
+```
+
+### Notificaciones
+```
+GET /notifications/all                     - Historial de notificaciones
+POST /notifications/appointment-reminder    - Recordatorio de turno
+POST /notifications/appointment-confirmation - Confirmación de turno
+
+```
+
+### Estadísticas
+```
+GET /stats/patients-monthly  - Estadísticas mensuales de pacientes
+GET /stats/appointments-today - Turnos del día
+GET /stats/top-dentists      - Top odontólogos
+GET /stats/overview          - Resumen general
+
+```
+
+## 🧪 Testing
+El proyecto incluye tests unitarios y de integración:
+```
+# Ejecutar todos los tests
+mvn test
+
+# Ejecutar tests con cobertura
+mvn jacoco:report
+
+```
+
+## 📊 Métricas y Monitoreo
+```
+Jacoco: Cobertura de código
+
+Spring Boot Actuator: Health checks y métricas
+
+Logging: Configuración con Logback
+```
+
+## 🚀 Despliegue en Producción
+```
+Plataforma: Render.com
+
+URL: https://dental-clinic-backend-53ys.onrender.com
+
+Base de Datos: PostgreSQL
+
+CI/CD: Integración con GitHub
+```
+
+## 👨‍💻 Habilidades Demostradas
+```
+Spring Framework
+
+Spring Boot Auto-configuration
+
+Spring Data JPA y Repositories
+
+Spring Security y JWT
+
+Spring MVC y REST controllers
+
+Spring Validation
+
+Patrones de Diseño
+
+MVC (Model-View-Controller)
+
+DTO (Data Transfer Object)
+
+Repository Pattern
+
+Service Layer Pattern
+
+Dependency Injection
+
+Base de Datos
+
+Mapeo ORM con JPA/Hibernate
+
+Relaciones @OneToMany, @ManyToOne
+
+Consultas con Spring Data JPA
+
+Transacciones y manejo de excepciones
+
+Seguridad
+
+Autenticación JWT stateless
+
+Autorización basada en roles
+
+Configuración de CORS
+
+Protección contra CSRF
+
+Calidad de Código
+
+Principios SOLID
+
+Clean Architecture
+
+Manejo de excepciones
+
+Validación de datos
+
+Logging estructurado
+```
+
+## 👤 Autor
+```
+Augusto Rinaldi - Desarrollador Backend Java
+
+GitHub: @RinaldiAugusto
+
+LinkedIn: Augusto Rinaldi
+
+gmail: augusto.rinaldi.75@gmail.com
+```
