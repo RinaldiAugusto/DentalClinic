@@ -1008,7 +1008,7 @@
 
         let html = `
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-hover">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
@@ -1022,20 +1022,21 @@
         `;
 
         dentists.forEach(dentist => {
+            // ✅ CORREGIDO: usar registration en lugar de license
             html += `
                 <tr>
-                    <td>${dentist.id}</td>
-                    <td>${dentist.name}</td>
-                    <td>${dentist.lastName}</td>
-                    <td><span class="badge badge-secondary">${dentist.license}</span></td>
+                    <td><strong>${dentist.id}</strong></td>
+                    <td>${dentist.name || 'N/A'}</td>
+                    <td>${dentist.lastName || 'N/A'}</td>
+                    <td><span class="badge badge-primary">${dentist.registration || 'Sin matrícula'}</span></td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editarOdontologo(${dentist.id})"
                                 ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn btn-sm btn-danger" onclick="eliminarOdontologo(${dentist.id})"
                                 ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </td>
                 </tr>
@@ -1140,6 +1141,50 @@
             dentist.license.toLowerCase().includes(searchTerm)
         );
         mostrarOdontologos(filtered);
+    }
+
+    async function verDetallesOdontologo(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists/${id}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const dentist = await response.json();
+
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Información Personal</h6>
+                        <p><strong>ID:</strong> ${dentist.id}</p>
+                        <p><strong>Nombre:</strong> ${dentist.name} ${dentist.lastName}</p>
+                        <p><strong>Matrícula:</strong> <span class="badge badge-secondary">${dentist.license}</span></p>
+                        <p><strong>Email:</strong> ${dentist.email || 'No registrado'}</p>
+                        <p><strong>Teléfono:</strong> ${dentist.phone || 'No registrado'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Información Profesional</h6>
+                        <p><strong>Especialidad:</strong> <span class="badge badge-info">${dentist.specialty || 'General'}</span></p>
+                        <p><strong>Estado:</strong>
+                            <span class="badge badge-${dentist.active ? 'success' : 'secondary'}">
+                                ${dentist.active ? 'ACTIVO' : 'INACTIVO'}
+                            </span>
+                        </p>
+                        <p><strong>Años de Experiencia:</strong> ${dentist.yearsExperience || 'No especificado'}</p>
+                        <p><strong>Horario:</strong> ${dentist.workingHours || 'No especificado'}</p>
+                    </div>
+                </div>
+            `;
+
+            // Crear modal dinámicamente o usar uno existente
+            document.getElementById('detallesPacienteBody').innerHTML = html;
+            $('#detallesPacienteModal .modal-title').html('<i class="fas fa-user-md"></i> Detalles del Odontólogo');
+            $('#detallesPacienteModal').modal('show');
+
+        } catch (error) {
+            mostrarAlerta('Error al cargar detalles del odontólogo: ' + error.message, 'danger');
+        }
     }
 
     // 👥 FUNCIONES COMPLETAS PARA PACIENTES
@@ -1473,14 +1518,13 @@
 
         let html = `
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-hover">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
-                            <th>Fecha y Hora</th>
-                            <th>Odontólogo</th>
-                            <th>Paciente</th>
-                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>ID Odontólogo</th>
+                            <th>ID Paciente</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -1488,23 +1532,48 @@
         `;
 
         appointments.forEach(appointment => {
-            const fecha = new Date(appointment.dateTime);
-            const statusBadge = getStatusBadge(appointment.status);
+            // ✅ CORREGIDO: Manejar diferentes formatos de fecha
+            let fechaFormateada = 'Fecha inválida';
+
+            try {
+                if (appointment.date) {
+                    // Si date es un string como "2024-01-15"
+                    if (typeof appointment.date === 'string') {
+                        const fecha = new Date(appointment.date);
+                        if (!isNaN(fecha.getTime())) {
+                            fechaFormateada = fecha.toLocaleDateString();
+                        }
+                    }
+                    // Si date es un objeto con timestamp (poco probable en tu caso)
+                    else if (appointment.date instanceof Object) {
+                        const fecha = new Date(appointment.date);
+                        if (!isNaN(fecha.getTime())) {
+                            fechaFormateada = fecha.toLocaleDateString();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error formateando fecha:', error);
+                fechaFormateada = 'Error fecha';
+            }
 
             html += `
                 <tr>
-                    <td>${appointment.id}</td>
-                    <td>${fecha.toLocaleString()}</td>
-                    <td>${appointment.dentist?.name} ${appointment.dentist?.lastName}</td>
-                    <td>${appointment.patient?.name} ${appointment.patient?.lastName}</td>
-                    <td>${statusBadge}</td>
+                    <td><strong>${appointment.id}</strong></td>
+                    <td>${fechaFormateada}</td>
+                    <td>
+                        <span class="badge badge-info">${appointment.dentistId || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-secondary">${appointment.patientId || 'N/A'}</span>
+                    </td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editarTurno(${appointment.id})">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn btn-sm btn-danger" onclick="eliminarTurno(${appointment.id})"
                                 ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </td>
                 </tr>
@@ -1520,7 +1589,9 @@
             'PENDIENTE': 'warning',
             'CONFIRMADO': 'success',
             'COMPLETADO': 'info',
-            'CANCELADO': 'danger'
+            'CANCELADO': 'danger',
+            'REPROGRAMADO': 'primary',
+            'AUSENTE': 'dark'
         };
         const badgeClass = statusMap[status] || 'secondary';
         return `<span class="badge badge-${badgeClass}">${status || 'PENDIENTE'}</span>`;
@@ -1586,20 +1657,19 @@
             // Llenar el formulario
             document.getElementById('editAppointmentId').value = appointment.id;
 
-            // Formatear fecha y hora
-            const fechaHora = new Date(appointment.dateTime);
-            const fecha = fechaHora.toISOString().split('T')[0];
-            const hora = fechaHora.toTimeString().split(':').slice(0, 2).join(':');
+            // ✅ SOLUCIÓN: Usar appointment.date directamente (ya es LocalDate)
+            document.getElementById('editAppointmentDate').value = appointment.date;
 
-            document.getElementById('editAppointmentDate').value = fecha;
-            document.getElementById('editAppointmentTime').value = hora;
+            // ❌ ELIMINAR la parte de hora (o usar un valor por defecto)
+            document.getElementById('editAppointmentTime').value = '10:00'; // Valor por defecto
+
             document.getElementById('editAppointmentDescription').value = appointment.description || '';
             document.getElementById('editAppointmentStatus').value = appointment.status || 'PENDIENTE';
 
-            // Seleccionar odontólogo y paciente (esperar a que se carguen los selectores)
+            // Seleccionar odontólogo y paciente
             setTimeout(() => {
-                document.getElementById('editAppointmentDentist').value = appointment.dentist?.id || '';
-                document.getElementById('editAppointmentPatient').value = appointment.patient?.id || '';
+                document.getElementById('editAppointmentDentist').value = appointment.dentistId || '';
+                document.getElementById('editAppointmentPatient').value = appointment.patientId || '';
             }, 100);
 
             $('#editarTurnoModal').modal('show');
@@ -1610,27 +1680,24 @@
         }
     }
 
-    // 📅 FUNCIÓN CORREGIDA PARA ACTUALIZAR TURNO
     async function actualizarTurno() {
         const id = document.getElementById('editAppointmentId').value;
         const dentistId = document.getElementById('editAppointmentDentist').value;
         const patientId = document.getElementById('editAppointmentPatient').value;
-        const date = document.getElementById('editAppointmentDate').value;
-        const time = document.getElementById('editAppointmentTime').value;
+        const date = document.getElementById('editAppointmentDate').value; // Solo fecha
         const description = document.getElementById('editAppointmentDescription').value;
-        const status = document.getElementById('editAppointmentStatus').value; // ✅ AGREGADO
 
-        if (!dentistId || !patientId || !date || !time) {
+        if (!dentistId || !patientId || !date) {
             mostrarAlerta('Complete todos los campos obligatorios', 'warning');
             return;
         }
 
+        // ✅ SOLO fecha (sin hora) - porque tu backend usa LocalDate
         const appointmentData = {
             dentistId: parseInt(dentistId),
             patientId: parseInt(patientId),
-            dateTime: `${date}T${time}:00`,
-            description: description,
-            status: status // ✅ AGREGADO
+            date: date,  // Solo la fecha
+            description: description
         };
 
         console.log('📤 Actualizando turno:', appointmentData);
