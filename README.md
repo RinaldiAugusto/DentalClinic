@@ -1,158 +1,118 @@
-# 🦷 Dental Clinic - API REST
+# 🦷 Dental Clinic Management System
+
+A complete full-stack web application for managing dental clinics, built with Spring Boot and modern frontend technologies.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
-![GitHub Actions](https://github.com/RinaldiAugusto/DentalClinic/actions/workflows/ci.yml/badge.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple)
 
-Una API REST profesional para gestión de clínicas dentales desarrollada con Spring Boot y arquitectura en capas.
+## 🚀 Live Demo
 
-## 📋 Tabla de Contenidos
+- **Frontend**: [View Live Demo](https://rinaldiaugusto.github.io/DentalClinic)
+- **Backend API**: `https://dental-clinic-backend-53ys.onrender.com`
+- **Test Credentials**:
+  - Email: `admin@clinica.com`
+  - Password: `admin123`
 
-- [Características](#características)
-- [Tecnologías](#tecnologías-utilizadas)
-- [Estructura](#estructura-del-proyecto)
-- [Instalación](#instalación-y-ejecución)
-- [API](#documentación-de-la-api)
-- [Endpoints](#endpoints-principales)
-- [Docker](#docker)
-- [Diagramas](#diagramas)
-- [Contribución](#contribución)
-- [Estado](#estado-del-proyecto)
+⚠️ **Note**: The frontend demo requires the backend to be running. Use the test credentials above.
 
-## ⚙️ Características
+## 📋 Features
 
-- ✅ **Arquitectura en capas** (Controller-Service-Repository)
-- ✅ **DTOs y Mappers** para separación de concerns
-- ✅ **Validaciones automáticas** con Bean Validation
-- ✅ **Manejo profesional de errores** global
-- ✅ **Documentación automática** con Swagger/OpenAPI
-- ✅ **Containerización** con Docker
-- ✅ **Base de datos H2** para desarrollo
-- ✅ **Migración gradual** de endpoints
+### 🔐 Authentication & Security
+- JWT-based authentication
+- Role-based access control (ADMIN/USER)
+- Secure password encryption
+- Session management
 
-## 🛠️ Tecnologías Utilizadas
+### 👥 User Management
+- User registration and login
+- Role-based dashboard access
+- Profile management
 
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| Spring Boot | 3.2.1 | Framework principal |
-| Java | 17 | Lenguaje de programación |
-| Spring Data JPA | 3.2.1 | Persistencia de datos |
-| H2 Database | 2.2.224 | Base de datos en memoria |
-| Docker | Latest | Containerización |
-| SpringDoc OpenAPI | 2.0.3 | Documentación API |
+### 🦷 Dentists Management
+- Complete CRUD operations
+- License number validation
+- Search and filter functionality
 
+### 👨‍⚕️ Patients Management
+- Patient registration with full details
+- Address management
+- Medical history tracking
+- Advanced search capabilities
 
-## 🚀 Instalación y Ejecución
+### 📅 Appointments System
+- Schedule and manage appointments
+- Real-time availability checking
+- Appointment status tracking (Pending/Confirmed/Completed/Cancelled)
+- Calendar integration
 
-### Prerrequisitos
-- Java 17
-- Maven 3.8+
-- Docker (opcional)
+### 📊 Reporting & Analytics
+- Patient medical reports (PDF)
+- Appointment receipts
+- Medical certificates
+- Clinic statistics dashboard
 
-### Ejecución Local
+### 🔔 Notifications
+- Appointment reminders
+- Confirmation notifications
+- Notification history
+- Email integration ready
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Java 17** - Core programming language
+- **Spring Boot 3.0** - Application framework
+- **Spring Security** - Authentication & authorization
+- **Spring Data JPA** - Database operations
+- **PostgreSQL** - Production database
+- **JWT** - Token-based authentication
+- **Maven** - Dependency management
+
+### Frontend
+- **HTML5** - Markup language
+- **CSS3** - Styling with custom terracota palette
+- **JavaScript (ES6+)** - Client-side functionality
+- **Bootstrap 5** - Responsive design framework
+- **Font Awesome** - Icons
+- **Chart.js** - Statistics and charts
+
+### DevOps & Tools
+- **Render** - Cloud deployment platform
+- **Git** - Version control
+- **Postman** - API testing
+- **GitHub Pages** - Frontend hosting
+
+## 🗄️ Database Schema
+
+![Database Schema](docs/database/schema.png)
+
+Key Entities:
+- **Users** - System users and authentication
+- **Dentists** - Dental professionals
+- **Patients** - Clinic patients with medical history
+- **Appointments** - Scheduling and visit tracking
+- **Addresses** - Patient location information
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+- Java 17 or higher
+- Maven 3.6+
+- PostgreSQL 12+
+- Node.js (for frontend development)
+
+### Backend Setup
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone https://github.com/RinaldiAugusto/DentalClinic.git
-cd DentalClinic
+cd DentalClinic/backend
 
-# Compilar el proyecto
-mvn clean package
+# Configure database in application.properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/dental_clinic
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 
-# Ejecutar la aplicación
-java -jar target/DentalClinicMVC-0.0.1-SNAPSHOT.jar
-
-# Construir la imagen
-docker build -t dental-clinic-app .
-```
-
-## 📚 Documentación de la API
-
-Una vez ejecutada la aplicación, accede a la documentación interactiva:
-
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
-- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
-
-## 🌐 Endpoints Principales
-
-### Pacientes (`/patients`)
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/patients` | Obtener todos los pacientes |
-| GET | `/patients/{id}` | Obtener paciente por ID |
-| POST | `/patients` | Crear nuevo paciente |
-| PUT | `/patients/{id}` | Actualizar paciente |
-| DELETE | `/patients/{id}` | Eliminar paciente |
-
-### Dentistas (`/dentists`)
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/dentists` | Obtener todos los dentistas |
-| GET | `/dentists/{id}` | Obtener dentista por ID |
-| POST | `/dentists` | Crear nuevo dentista |
-| PUT | `/dentists/{id}` | Actualizar dentista |
-| DELETE | `/dentists/{id}` | Eliminar dentista |
-
-### Turnos (`/appointments`)
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/appointments` | Obtener turnos (v1) |
-| GET | `/appointments/v2` | Obtener turnos con DTOs (v2) |
-| POST | `/appointments/v2` | Crear turno con DTOs |
-
-## 🐳 Docker
-
-El proyecto incluye un **Dockerfile de dos etapas**:
-
-```dockerfile
-# Primera etapa: construcción
-FROM maven:3.8.5-openjdk-17 AS builder
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Segunda etapa: ejecución
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-
-## 👥 Contribución
-
-¡Contribuciones son bienvenidas! 
-
-1. **Fork** el proyecto
-2. **Crea una rama**: `git checkout -b feature/nueva-feature`
-3. **Commit**: `git commit -m 'feat: nueva feature'`
-4. **Push**: `git push origin feature/nueva-feature`
-5. **Abre un Pull Request**
-
-## 📈 Estado del Proyecto
-
-### ✅ Completado
-
-- [x] API REST completa
-- [x] Arquitectura con DTOs
-- [x] Documentación Swagger
-- [x] Docker containerización
-- [x] GitHub Actions CI/CD
-
-## 👤 Autor
-
-**Augusto Rinaldi** - [GitHub](https://github.com/RinaldiAugusto)
-
----
-
-<div align="center">
-
-### ⭐ Si te gusta este proyecto, ¡dale una estrella!
-
-</div>
-
+# Run the application
+mvn spring-boot:run
