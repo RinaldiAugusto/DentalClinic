@@ -1610,6 +1610,7 @@
         }
     }
 
+    // 📅 FUNCIÓN CORREGIDA PARA ACTUALIZAR TURNO
     async function actualizarTurno() {
         const id = document.getElementById('editAppointmentId').value;
         const dentistId = document.getElementById('editAppointmentDentist').value;
@@ -1617,6 +1618,7 @@
         const date = document.getElementById('editAppointmentDate').value;
         const time = document.getElementById('editAppointmentTime').value;
         const description = document.getElementById('editAppointmentDescription').value;
+        const status = document.getElementById('editAppointmentStatus').value; // ✅ AGREGADO
 
         if (!dentistId || !patientId || !date || !time) {
             mostrarAlerta('Complete todos los campos obligatorios', 'warning');
@@ -1627,7 +1629,8 @@
             dentistId: parseInt(dentistId),
             patientId: parseInt(patientId),
             dateTime: `${date}T${time}:00`,
-            description: description
+            description: description,
+            status: status // ✅ AGREGADO
         };
 
         console.log('📤 Actualizando turno:', appointmentData);
@@ -1658,16 +1661,21 @@
         }
     }
 
+    // 📅 FUNCIÓN CORREGIDA PARA ELIMINAR TURNO
     async function eliminarTurno(id) {
         if (!confirm('¿Está seguro de eliminar este turno?')) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
+            // ✅ URL CORREGIDA - agregar /v2/
+            const response = await fetch(`${API_BASE_URL}/appointments/v2/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
 
-            if (!response.ok) throw new Error(`Error ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
 
             mostrarAlerta('✅ Turno eliminado exitosamente', 'success');
             listarTurnos();
@@ -1675,6 +1683,7 @@
             cargarSelectoresUnificados();
 
         } catch (error) {
+            console.error('❌ Error al eliminar turno:', error);
             mostrarAlerta('Error al eliminar turno: ' + error.message, 'danger');
         }
     }

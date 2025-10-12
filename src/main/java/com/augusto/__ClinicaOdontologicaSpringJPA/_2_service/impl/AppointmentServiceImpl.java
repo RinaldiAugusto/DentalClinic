@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentCreateDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.dto.AppointmentDTOs.AppointmentResponseDTO;
 import com.augusto.__ClinicaOdontologicaSpringJPA.mapper.AppointmentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IDentistService;
+import com.augusto.__ClinicaOdontologicaSpringJPA._2_service.IPatientService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,17 +24,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl implements IAppointmentService {
-    private AppointmentRepository repository;
-    private DentistServiceImpl dentistService;
-    private PatientServiceImpl patientService;
 
+    private final AppointmentRepository repository;
+    private final IDentistService dentistService;
+    private final IPatientService patientService;
+    private final AppointmentMapper appointmentMapper;
+
+    // ✅ CONSTRUCTOR CORREGIDO - Inyectar todas las dependencias
     @Autowired
-    public AppointmentServiceImpl(AppointmentRepository repository) {
+    public AppointmentServiceImpl(AppointmentRepository repository,
+                                  IDentistService dentistService,
+                                  IPatientService patientService,
+                                  AppointmentMapper appointmentMapper) {
         this.repository = repository;
+        this.dentistService = dentistService;
+        this.patientService = patientService;
+        this.appointmentMapper = appointmentMapper;
     }
 
-    @Autowired
-    private AppointmentMapper appointmentMapper;
 
     public AppointmentDTO save(AppointmentDTO appointmentDTO){
         //PERSISTIR ENTIDADES Y DEVOLVER DTOs
@@ -185,39 +192,84 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
     @Override
     public AppointmentResponseDTO createAppointment(AppointmentCreateDTO appointmentCreateDTO) {
-        Appointment appointment = appointmentMapper.toEntity(appointmentCreateDTO);
+        // ✅ Usar findById existente y obtener la entidad del Optional
+        Dentist dentist = dentistService.findById(appointmentCreateDTO.getDentistId())
+                .map(dto -> {
+                    Dentist entity = new Dentist();
+                    entity.setId(dto.getId());
+                    entity.setName(dto.getName());
+                    entity.setLastName(dto.getLastName());
+                    entity.setRegistration(dto.getRegistration());
+                    return entity;
+                })
+                .orElseThrow(() -> new RuntimeException("Dentista no encontrado con ID: " + appointmentCreateDTO.getDentistId()));
+
+        Patient patient = patientService.findById(appointmentCreateDTO.getPatientId())
+                .map(dto -> {
+                    Patient entity = new Patient();
+                    entity.setId(dto.getId());
+                    entity.setName(dto.getName());
+                    entity.setLastName(dto.getLastName());
+                    entity.setCardIdentity(dto.getCardIdentity());
+                    return entity;
+                })
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + appointmentCreateDTO.getPatientId()));
+
+        // Crear la entidad Appointment
+        Appointment appointment = new Appointment();
+        appointment.setDate(appointmentCreateDTO.getDate());
+        appointment.setDentist(dentist);
+        appointment.setPatient(patient);
+
         Appointment savedAppointment = repository.save(appointment);
         return appointmentMapper.toResponseDTO(savedAppointment);
     }
 
     @Override
     public AppointmentResponseDTO updateAppointment(Long id, AppointmentCreateDTO appointmentCreateDTO) {
-        // Primero buscamos el appointment existente
+        // Buscar el appointment existente
         Appointment existingAppointment = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment no encontrado con ID: " + id));
 
-        // Actualizamos los campos
+        // Actualizar campos
         if (appointmentCreateDTO.getDate() != null) {
             existingAppointment.setDate(appointmentCreateDTO.getDate());
-        }
-
-        // Actualizar paciente si se proporciona
-        if (appointmentCreateDTO.getPatientId() != null) {
-            Patient patient = patientService.findById(appointmentCreateDTO.getPatientId())
-                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-            existingAppointment.setPatient(patient);
         }
 
         // Actualizar dentista si se proporciona
         if (appointmentCreateDTO.getDentistId() != null) {
             Dentist dentist = dentistService.findById(appointmentCreateDTO.getDentistId())
-                    .orElseThrow(() -> new RuntimeException("Dentista no encontrado"));
+                    .map(dto -> {
+                        Dentist entity = new Dentist();
+                        entity.setId(dto.getId());
+                        entity.setName(dto.getName());
+                        entity.setLastName(dto.getLastName());
+                        entity.setRegistration(dto.getRegistration());
+                        return entity;
+                    })
+                    .orElseThrow(() -> new RuntimeException("Dentista no encontrado con ID: " + appointmentCreateDTO.getDentistId()));
             existingAppointment.setDentist(dentist);
+        }
+
+        // Actualizar paciente si se proporciona
+        if (appointmentCreateDTO.getPatientId() != null) {
+            Patient patient = patientService.findById(appointmentCreateDTO.getPatientId())
+                    .map(dto -> {
+                        Patient entity = new Patient();
+                        entity.setId(dto.getId());
+                        entity.setName(dto.getName());
+                        entity.setLastName(dto.getLastName());
+                        entity.setCardIdentity(dto.getCardIdentity());
+                        return entity;
+                    })
+                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + appointmentCreateDTO.getPatientId()));
+            existingAppointment.setPatient(patient);
         }
 
         Appointment updatedAppointment = repository.save(existingAppointment);
         return appointmentMapper.toResponseDTO(updatedAppointment);
     }
+
 
     @Override
     public AppointmentResponseDTO findAppointmentResponseById(Long id) {
@@ -232,6 +284,14 @@ public class AppointmentServiceImpl implements IAppointmentService {
                 .stream()
                 .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ✅ MÉTODO NUEVO PARA ELIMINAR EN V2
+    public void deleteAppointment(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Appointment no encontrado con ID: " + id);
+        }
+        repository.deleteById(id);
     }
 
 }

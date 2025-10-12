@@ -20,17 +20,19 @@ import java.util.Optional;
 public class AppointmentController {
 
     private final IAppointmentService iAppointmentServiceImpl;
-
     private final IDentistService iDentistService;
-
     private final IPatientService iPatientService;
 
     @Autowired
-    public AppointmentController(IAppointmentService iAppointmentServiceImpl, IDentistService iDentistService, IPatientService iPatientService) {
+    public AppointmentController(IAppointmentService iAppointmentServiceImpl,
+                                 IDentistService iDentistService,
+                                 IPatientService iPatientService) {
         this.iAppointmentServiceImpl = iAppointmentServiceImpl;
         this.iDentistService = iDentistService;
         this.iPatientService = iPatientService;
     }
+
+    // ========== VERSIÓN ORIGINAL (DTO viejo) ==========
 
     @PostMapping
     public ResponseEntity<AppointmentDTO> save(@RequestBody AppointmentDTO appointmentDTO){
@@ -68,12 +70,9 @@ public class AppointmentController {
         if (iDentistService.findById(appointmentDTO.getDentist_id()).isPresent()
                 && iPatientService.findById(appointmentDTO.getPatient_id()).isPresent()) {
             //ambos existen en la DB
-            //seteamos al ResponseEntity con el código 200 y le agregamos el turno dto como cuerpo de la respuesta
             response = ResponseEntity.ok(iAppointmentServiceImpl.update(appointmentDTO));
-
         } else {
             //uno no existe, entonces bloqueamos la operación
-            //setear al ResponseEntity el código 400
             response = ResponseEntity.badRequest().build();
         }
         return response;
@@ -84,6 +83,8 @@ public class AppointmentController {
         iAppointmentServiceImpl.delete(id);
         return ResponseEntity.ok("Se elimino el turno con id: " + id);
     }
+
+    // ========== VERSIÓN V2 (Nuevos DTOs) ==========
 
     @PostMapping("/v2")
     public ResponseEntity<AppointmentResponseDTO> createAppointmentV2(@Valid @RequestBody AppointmentCreateDTO appointmentCreateDTO) {
@@ -110,8 +111,18 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponseDTO> updateAppointmentV2(
             @PathVariable Long id,
             @Valid @RequestBody AppointmentCreateDTO appointmentCreateDTO) {
-
         AppointmentResponseDTO updatedAppointment = iAppointmentServiceImpl.updateAppointment(id, appointmentCreateDTO);
         return ResponseEntity.ok(updatedAppointment);
+    }
+
+    // ✅ DELETE V2 - FALTANTE - ESTE ES EL QUE NECESITA TU FRONTEND
+    @DeleteMapping("/v2/{id}")
+    public ResponseEntity<String> deleteAppointmentV2(@PathVariable Long id) {
+        try {
+            iAppointmentServiceImpl.deleteAppointment(id);
+            return ResponseEntity.ok("Turno eliminado exitosamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
