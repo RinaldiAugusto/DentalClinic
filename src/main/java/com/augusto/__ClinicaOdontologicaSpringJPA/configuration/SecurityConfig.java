@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
+@ EnableWebSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -47,9 +47,23 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        // ✅ AGREGAR ESTOS ENDPOINTS PÚBLICOS PARA RENDER:
+                        .requestMatchers(
+                                "/",
+                                "/auth/**",
+                                "/public/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/api-docs",
+                                "/api-docs/**",
+                                "/webjars/**",
+                                "/h2-console/**",
+                                "/actuator/**",
+                                "/health",
+                                "/error",
+                                "/favicon.ico"
+                        ).permitAll()
 
                         // ✅ USAR hasAnyAuthority CON "ROLE_" PREFIX
                         .requestMatchers("/dentists/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
