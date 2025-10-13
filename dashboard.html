@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Dashboard - Clínica Dental</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(45deg, var(--terracota-dark), var(--terracota-primary)) !important;">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-tooth"></i> Clínica Dental
+    </a>
+    <div class="navbar-nav ml-auto">
+        <span class="navbar-text mr-3" id="userEmail"></span>
+        <span class="navbar-text mr-3" id="userRole"></span>
+        <div class="btn-group">
+            <button class="btn btn-outline-light btn-sm" onclick="showStatsModal()">
+                <i class="fas fa-chart-bar"></i> Estadísticas
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+    <!-- Alertas -->
+    <div id="alertContainer"></div>
+
+    <!-- Menú de Navegación -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-primary active" onclick="showSection('dashboard')">
+                            <input type="radio" checked> <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </label>
+                        <label class="btn btn-outline-primary" onclick="showSection('dentists')">
+                            <input type="radio"> <i class="fas fa-user-md"></i> Odontólogos
+                        </label>
+                        <label class="btn btn-outline-primary" onclick="showSection('patients')">
+                            <input type="radio"> <i class="fas fa-users"></i> Pacientes
+                        </label>
+                        <label class="btn btn-outline-primary" onclick="showSection('appointments')">
+                            <input type="radio"> <i class="fas fa-calendar-alt"></i> Turnos
+                        </label>
+                        <label class="btn btn-outline-primary" onclick="showSection('reports')">
+                            <input type="radio"> <i class="fas fa-file-pdf"></i> Reportes
+                        </label>
+                        <label class="btn btn-outline-primary" onclick="showSection('notifications')">
+                            <input type="radio"> <i class="fas fa-bell"></i> Notificaciones
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Dashboard -->
+    <div id="dashboard-section" class="section-content">
+        <div class="row">
+            <!-- Tarjetas de Estadísticas -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Odontólogos
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="stats-dentists">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-md fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Pacientes
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="stats-patients">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Turnos Hoy
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="stats-appointments-today">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Ingresos Mensuales
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="stats-monthly">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos y Listas Rápidas -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Últimos Turnos</h6>
+                    </div>
+                    <div class="card-body" id="recent-appointments">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary"></div>
+                            <p class="mt-2">Cargando turnos...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-success">Top Odontólogos</h6>
+                    </div>
+                    <div class="card-body" id="top-dentists">
+                        <div class="text-center">
+                            <div class="spinner-border text-success"></div>
+                            <p class="mt-2">Cargando estadísticas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificaciones Recientes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-info">
+                            <i class="fas fa-bell"></i> Notificaciones Recientes
+                        </h6>
+                        <button class="btn btn-info btn-sm" onclick="cargarNotificaciones()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    <div class="card-body" id="recent-notifications">
+                        <div class="text-center">
+                            <div class="spinner-border text-info"></div>
+                            <p class="mt-2">Cargando notificaciones...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Odontólogos -->
+    <div id="dentists-section" class="section-content" style="display: none;">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user-md"></i> Gestión de Odontólogos
+                </h6>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="listarOdontologos()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#crearOdontologoModal">
+                        <i class="fas fa-plus"></i> Nuevo Odontólogo
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchDentist"
+                               placeholder="Buscar por nombre, apellido o matrícula..."
+                               onkeyup="filtrarOdontologos()">
+                    </div>
+                </div>
+                <div id="dentists-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="mt-2">Cargando odontólogos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Pacientes -->
+    <div id="patients-section" class="section-content" style="display: none;">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-success">
+                    <i class="fas fa-users"></i> Gestión de Pacientes
+                </h6>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="listarPacientes()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#crearPacienteModal">
+                        <i class="fas fa-plus"></i> Nuevo Paciente
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchPatient"
+                               placeholder="Buscar por nombre, apellido o DNI..."
+                               onkeyup="filtrarPacientes()">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-info btn-block" onclick="buscarPacientePorApellido()">
+                            <i class="fas fa-search"></i> Buscar por Apellido
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-info btn-block" onclick="buscarPacientePorNombre()">
+                            <i class="fas fa-search"></i> Buscar por Nombre
+                        </button>
+                    </div>
+                </div>
+                <div id="patients-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-success"></div>
+                        <p class="mt-2">Cargando pacientes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Turnos -->
+    <div id="appointments-section" class="section-content" style="display: none;">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-info">
+                    <i class="fas fa-calendar-alt"></i> Gestión de Turnos
+                </h6>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="listarTurnos()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#crearTurnoModal">
+                        <i class="fas fa-plus"></i> Nuevo Turno
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select class="form-control" id="filterAppointmentStatus" onchange="filtrarTurnos()">
+                            <option value="">Todos los estados</option>
+                            <option value="PENDIENTE">Pendientes</option>
+                            <option value="CONFIRMADO">Confirmados</option>
+                            <option value="COMPLETADO">Completados</option>
+                            <option value="CANCELADO">Cancelados</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="date" class="form-control" id="filterAppointmentDate" onchange="filtrarTurnos()">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-warning btn-block" onclick="mostrarTodosLosTurnos()">
+                            <i class="fas fa-eye"></i> Mostrar Todos
+                        </button>
+                    </div>
+                </div>
+                <div id="appointments-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-info"></div>
+                        <p class="mt-2">Cargando turnos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Reportes -->
+    <div id="reports-section" class="section-content" style="display: none;">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow border-left-primary">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-medical fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Reporte de Paciente</h5>
+                        <p class="card-text">Genera un reporte completo del historial del paciente</p>
+                        <div class="form-group">
+                            <label for="selectPatientReport">Paciente:</label>
+                            <div class="input-group">
+                                <select class="custom-select" id="selectPatientReport" required
+                                        style="border: 2px solid #28a745; cursor: pointer; height: 45px; font-size: 16px;">
+                                    <option value="">Seleccionar paciente...</option>
+                                    <!-- Las opciones se cargarán aquí -->
+                                </select>
+                                <div class="input-group-append">
+                            <span class="input-group-text" style="background: #28a745; color: white;">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted" id="patientDebugInfo">
+                                <span id="patientCount">0</span> pacientes disponibles
+                            </small>
+                        </div>
+                        <button class="btn btn-primary btn-block" onclick="generarReportePaciente()">
+                            <i class="fas fa-download"></i> Descargar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow border-left-success">
+                    <div class="card-body text-center">
+                        <i class="fas fa-receipt fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Comprobante de Turno</h5>
+                        <p class="card-text">Genera un comprobante del turno para el paciente</p>
+                        <select class="form-control mb-2" id="selectAppointmentReceipt">
+                            <option value="">Seleccionar turno...</option>
+                        </select>
+                        <button class="btn btn-success btn-block" onclick="generarComprobanteTurno()">
+                            <i class="fas fa-download"></i> Descargar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow border-left-warning">
+                    <div class="card-body text-center">
+                        <i class="fas fa-certificate fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Certificado Médico</h5>
+                        <p class="card-text">Genera certificados médicos para pacientes</p>
+                        <select class="form-control mb-2" id="selectPatientCertificate">
+                            <option value="">Seleccionar paciente...</option>
+                        </select>
+                        <input type="text" class="form-control mb-2" id="certificateDiagnosis" placeholder="Diagnóstico">
+                        <input type="text" class="form-control mb-2" id="certificateTreatment" placeholder="Tratamiento">
+                        <button class="btn btn-warning btn-block" onclick="generarCertificadoMedico()">
+                            <i class="fas fa-download"></i> Generar Certificado
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Notificaciones -->
+    <div id="notifications-section" class="section-content" style="display: none;">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">
+                    <i class="fas fa-bell"></i> Sistema de Notificaciones
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6><i class="fas fa-bell text-warning"></i> Recordatorio de Turno</h6>
+                                <select class="form-control mb-2" id="selectAppointmentReminder">
+                                    <option value="">Seleccionar turno...</option>
+                                </select>
+                                <button class="btn btn-warning btn-sm btn-block" onclick="enviarRecordatorio()">
+                                    <i class="fas fa-bell"></i> Enviar Recordatorio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6><i class="fas fa-check-circle text-success"></i> Confirmación de Turno</h6>
+                                <select class="form-control mb-2" id="selectAppointmentConfirmation">
+                                    <option value="">Seleccionar turno...</option>
+                                </select>
+                                <button class="btn btn-success btn-sm btn-block" onclick="enviarConfirmacion()">
+                                    <i class="fas fa-check-circle"></i> Enviar Confirmación
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-history"></i> Historial de Notificaciones
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-info btn-sm mb-3" onclick="cargarTodasLasNotificaciones()">
+                                    <i class="fas fa-sync-alt"></i> Actualizar Historial
+                                </button>
+                                <div id="notifications-history">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-info"></div>
+                                        <p class="mt-2">Cargando historial de notificaciones...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear Odontólogo -->
+<div class="modal fade" id="crearOdontologoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-md"></i> Crear Odontólogo</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="crearOdontologoForm">
+                    <div class="form-group">
+                        <label for="dentistName">Nombre:</label>
+                        <input type="text" class="form-control" id="dentistName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dentistLastName">Apellido:</label>
+                        <input type="text" class="form-control" id="dentistLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dentistLicense">Matrícula:</label>
+                        <input type="text" class="form-control" id="dentistLicense" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="crearOdontologo()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Odontólogo -->
+<div class="modal fade" id="editarOdontologoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Odontólogo</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editarOdontologoForm">
+                    <input type="hidden" id="editDentistId">
+                    <div class="form-group">
+                        <label for="editDentistName">Nombre:</label>
+                        <input type="text" class="form-control" id="editDentistName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDentistLastName">Apellido:</label>
+                        <input type="text" class="form-control" id="editDentistLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDentistLicense">Matrícula:</label>
+                        <input type="text" class="form-control" id="editDentistLicense" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarOdontologo()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear Paciente -->
+<div class="modal fade" id="crearPacienteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-plus"></i> Crear Paciente</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="crearPacienteForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientName">Nombre:</label>
+                                <input type="text" class="form-control" id="patientName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientLastName">Apellido:</label>
+                                <input type="text" class="form-control" id="patientLastName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientCardIdentity">DNI:</label>
+                                <input type="text" class="form-control" id="patientCardIdentity" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientAdmissionDate">Fecha de Ingreso:</label>
+                                <input type="date" class="form-control" id="patientAdmissionDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="mt-3"><i class="fas fa-home"></i> Dirección</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientStreet">Calle:</label>
+                                <input type="text" class="form-control" id="patientStreet" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientNumber">Número:</label>
+                                <input type="text" class="form-control" id="patientNumber" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientLocation">Localidad:</label>
+                                <input type="text" class="form-control" id="patientLocation" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="patientProvince">Provincia:</label>
+                                <input type="text" class="form-control" id="patientProvince" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="crearPaciente()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Paciente -->
+<div class="modal fade" id="editarPacienteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Paciente</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editarPacienteForm">
+                    <input type="hidden" id="editPatientId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientName">Nombre:</label>
+                                <input type="text" class="form-control" id="editPatientName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientLastName">Apellido:</label>
+                                <input type="text" class="form-control" id="editPatientLastName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientCardIdentity">DNI:</label>
+                                <input type="text" class="form-control" id="editPatientCardIdentity" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientAdmissionDate">Fecha de Ingreso:</label>
+                                <input type="date" class="form-control" id="editPatientAdmissionDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="mt-3"><i class="fas fa-home"></i> Dirección</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientStreet">Calle:</label>
+                                <input type="text" class="form-control" id="editPatientStreet" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientNumber">Número:</label>
+                                <input type="text" class="form-control" id="editPatientNumber" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientLocation">Localidad:</label>
+                                <input type="text" class="form-control" id="editPatientLocation" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPatientProvince">Provincia:</label>
+                                <input type="text" class="form-control" id="editPatientProvince" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarPaciente()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Detalles de Paciente -->
+<div class="modal fade" id="detallesPacienteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Paciente</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="detallesPacienteBody">
+                <!-- Los detalles se cargan dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear Turno -->
+<div class="modal fade" id="crearTurnoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-calendar-plus"></i> Crear Turno</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="crearTurnoForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="appointmentDentist">Odontólogo:</label>
+                                <select class="form-control" id="appointmentDentist" required>
+                                    <option value="">Seleccionar odontólogo...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="appointmentPatient">Paciente:</label>
+                                <select class="form-control" id="appointmentPatient" required>
+                                    <option value="">Seleccionar paciente...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="appointmentDate">Fecha:</label>
+                                <input type="date" class="form-control" id="appointmentDate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="appointmentTime">Hora:</label>
+                                <input type="time" class="form-control" id="appointmentTime" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentDescription">Descripción/Motivo:</label>
+                        <textarea class="form-control" id="appointmentDescription" rows="3" placeholder="Descripción del turno..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="crearTurno()">
+                    <i class="fas fa-save"></i> Crear Turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Turno -->
+<div class="modal fade" id="editarTurnoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Turno</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editarTurnoForm">
+                    <input type="hidden" id="editAppointmentId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editAppointmentDentist">Odontólogo:</label>
+                                <select class="form-control" id="editAppointmentDentist" required>
+                                    <option value="">Seleccionar odontólogo...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editAppointmentPatient">Paciente:</label>
+                                <select class="form-control" id="editAppointmentPatient" required>
+                                    <option value="">Seleccionar paciente...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editAppointmentDate">Fecha:</label>
+                                <input type="date" class="form-control" id="editAppointmentDate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editAppointmentTime">Hora:</label>
+                                <input type="time" class="form-control" id="editAppointmentTime" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAppointmentDescription">Descripción/Motivo:</label>
+                        <textarea class="form-control" id="editAppointmentDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAppointmentStatus">Estado:</label>
+                        <select class="form-control" id="editAppointmentStatus">
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="CONFIRMADO">Confirmado</option>
+                            <option value="COMPLETADO">Completado</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarTurno()">
+                    <i class="fas fa-sync-alt"></i> Actualizar Turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Estadísticas Detalladas -->
+<div class="modal fade" id="statsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-chart-bar"></i> Estadísticas Detalladas</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-users"></i> Estadísticas de Pacientes</h6>
+                            </div>
+                            <div class="card-body" id="stats-patients-detailed">
+                                Cargando...
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-calendar"></i> Estadísticas de Turnos</h6>
+                            </div>
+                            <div class="card-body" id="stats-appointments-detailed">
+                                Cargando...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-chart-pie"></i> Resumen General</h6>
+                            </div>
+                            <div class="card-body" id="stats-overview">
+                                Cargando...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="cargarEstadisticasDetalladas()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+<script>
+    // CONFIGURACIÓN
+    const API_BASE_URL = 'https://dental-clinic-backend-53ys.onrender.com';
+    let currentUserRole = 'USER';
+    let allDentists = [];
+    let allPatients = [];
+    let allAppointments = [];
+    let allNotifications = [];
+
+    // Función mejorada para manejar errores de API
+    function handleApiError(error, context) {
+        console.error(`❌ Error en ${context}:`, error);
+
+        if (error.message.includes('401') || error.message.includes('403')) {
+            mostrarAlerta('Sesión expirada. Redirigiendo al login...', 'warning');
+            setTimeout(() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userEmail');
+                window.location.href = 'login.html';
+            }, 2000);
+        } else if (error.message.includes('404')) {
+            mostrarAlerta(`Recurso no encontrado en ${context}`, 'warning');
+        } else if (error.message.includes('500')) {
+            mostrarAlerta('Error del servidor. Intente nuevamente.', 'danger');
+        } else if (error.message.includes('Failed to fetch')) {
+            mostrarAlerta('Error de conexión. Verifique su internet.', 'danger');
+        } else {
+            mostrarAlerta(`Error en ${context}: ${error.message}`, 'danger');
+        }
+    }
+
+    // VERIFICAR AUTENTICACIÓN AL CARGAR
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (!token) {
+            mostrarAlerta('No estás autenticado. Redirigiendo al login...', 'warning');
+            setTimeout(() => window.location.href = 'login.html', 2000);
+            return;
+        }
+
+        // Decodificar token para obtener rol
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const roles = payload.roles || payload.role;
+            currentUserRole = Array.isArray(roles) ? roles[0] : roles;
+            console.log('🎭 Rol del usuario:', currentUserRole);
+        } catch (error) {
+            console.error('Error decodificando token:', error);
+        }
+
+        // Mostrar información del usuario
+        document.getElementById('userEmail').textContent = userEmail || 'Usuario';
+        document.getElementById('userRole').innerHTML = currentUserRole === 'ROLE_ADMIN'
+            ? '<span class="badge badge-danger"><i class="fas fa-crown"></i> ADMIN</span>'
+            : '<span class="badge badge-secondary"><i class="fas fa-user"></i> USER</span>';
+
+        // Cargar datos iniciales
+        cargarDashboard();
+        cargarSelectoresUnificados();
+        cargarNotificaciones();
+
+        // EVENT LISTENERS PARA MODALES - SOLUCIÓN CLAVE
+        $('#crearTurnoModal').on('show.bs.modal', async function () {
+            console.log('🎯 Modal crear turno abierto - cargando selectores...');
+            await cargarSelectoresParaTurnos();
+        });
+
+        $('#editarTurnoModal').on('show.bs.modal', async function () {
+            console.log('✏️ Modal editar turno abierto - cargando selectores...');
+            await cargarSelectoresParaTurnos();
+        });
+    });
+
+    // FUNCIONES DE NAVEGACIÓN
+    function showSection(sectionName) {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.section-content').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Mostrar la sección seleccionada
+        document.getElementById(sectionName + '-section').style.display = 'block';
+
+        // Cargar datos específicos de la sección
+        if (sectionName === 'dentists') {
+            listarOdontologos();
+        } else if (sectionName === 'patients') {
+            listarPacientes();
+        } else if (sectionName === 'appointments') {
+            listarTurnos();
+        } else if (sectionName === 'reports') {
+            cargarSelectoresParaReportes();
+        } else if (sectionName === 'notifications') {
+            cargarTodasLasNotificaciones();
+        }
+    }
+
+    // 🦷 FUNCIONES COMPLETAS PARA ODONTÓLOGOS
+    async function listarOdontologos() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            allDentists = await response.json();
+            mostrarOdontologos(allDentists);
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarAlerta('Error al cargar odontólogos: ' + error.message, 'danger');
+        }
+    }
+
+    function mostrarOdontologos(dentists) {
+        const container = document.getElementById('dentists-container');
+
+        if (!dentists || dentists.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No hay odontólogos registrados.</div>';
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Matrícula</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        dentists.forEach(dentist => {
+            // ✅ CORREGIDO: usar registration en lugar de license
+            html += `
+                <tr>
+                    <td><strong>${dentist.id}</strong></td>
+                    <td>${dentist.name || 'N/A'}</td>
+                    <td>${dentist.lastName || 'N/A'}</td>
+                    <td><span class="badge badge-primary">${dentist.registration || 'Sin matrícula'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editarOdontologo(${dentist.id})"
+                                ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarOdontologo(${dentist.id})"
+                                ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    async function crearOdontologo() {
+        const name = document.getElementById('dentistName').value;
+        const lastName = document.getElementById('dentistLastName').value;
+        const license = document.getElementById('dentistLicense').value;
+
+        if (!name || !lastName || !license) {
+            mostrarAlerta('Complete todos los campos', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ name, lastName, license })
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            $('#crearOdontologoModal').modal('hide');
+            document.getElementById('crearOdontologoForm').reset();
+            mostrarAlerta('✅ Odontólogo creado exitosamente', 'success');
+            listarOdontologos();
+            cargarDashboard();
+
+        } catch (error) {
+            mostrarAlerta('Error al crear odontólogo: ' + error.message, 'danger');
+        }
+    }
+
+    async function editarOdontologo(id) {
+        const dentist = allDentists.find(d => d.id === id);
+        if (!dentist) return;
+
+        document.getElementById('editDentistId').value = dentist.id;
+        document.getElementById('editDentistName').value = dentist.name;
+        document.getElementById('editDentistLastName').value = dentist.lastName;
+        document.getElementById('editDentistLicense').value = dentist.license;
+
+        $('#editarOdontologoModal').modal('show');
+    }
+
+    async function actualizarOdontologo() {
+        const id = document.getElementById('editDentistId').value;
+        const name = document.getElementById('editDentistName').value;
+        const lastName = document.getElementById('editDentistLastName').value;
+        const license = document.getElementById('editDentistLicense').value;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists/${id}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ name, lastName, license })
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            $('#editarOdontologoModal').modal('hide');
+            mostrarAlerta('✅ Odontólogo actualizado exitosamente', 'success');
+            listarOdontologos();
+
+        } catch (error) {
+            mostrarAlerta('Error al actualizar odontólogo: ' + error.message, 'danger');
+        }
+    }
+
+    async function eliminarOdontologo(id) {
+        if (!confirm('¿Está seguro de eliminar este odontólogo?')) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists/delete/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            mostrarAlerta('✅ Odontólogo eliminado exitosamente', 'success');
+            listarOdontologos();
+            cargarDashboard();
+
+        } catch (error) {
+            mostrarAlerta('Error al eliminar odontólogo: ' + error.message, 'danger');
+        }
+    }
+
+    function filtrarOdontologos() {
+        const searchTerm = document.getElementById('searchDentist').value.toLowerCase();
+        const filtered = allDentists.filter(dentist =>
+            dentist.name.toLowerCase().includes(searchTerm) ||
+            dentist.lastName.toLowerCase().includes(searchTerm) ||
+            dentist.license.toLowerCase().includes(searchTerm)
+        );
+        mostrarOdontologos(filtered);
+    }
+
+    async function verDetallesOdontologo(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/dentists/${id}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const dentist = await response.json();
+
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Información Personal</h6>
+                        <p><strong>ID:</strong> ${dentist.id}</p>
+                        <p><strong>Nombre:</strong> ${dentist.name} ${dentist.lastName}</p>
+                        <p><strong>Matrícula:</strong> <span class="badge badge-secondary">${dentist.license}</span></p>
+                        <p><strong>Email:</strong> ${dentist.email || 'No registrado'}</p>
+                        <p><strong>Teléfono:</strong> ${dentist.phone || 'No registrado'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Información Profesional</h6>
+                        <p><strong>Especialidad:</strong> <span class="badge badge-info">${dentist.specialty || 'General'}</span></p>
+                        <p><strong>Estado:</strong>
+                            <span class="badge badge-${dentist.active ? 'success' : 'secondary'}">
+                                ${dentist.active ? 'ACTIVO' : 'INACTIVO'}
+                            </span>
+                        </p>
+                        <p><strong>Años de Experiencia:</strong> ${dentist.yearsExperience || 'No especificado'}</p>
+                        <p><strong>Horario:</strong> ${dentist.workingHours || 'No especificado'}</p>
+                    </div>
+                </div>
+            `;
+
+            // Crear modal dinámicamente o usar uno existente
+            document.getElementById('detallesPacienteBody').innerHTML = html;
+            $('#detallesPacienteModal .modal-title').html('<i class="fas fa-user-md"></i> Detalles del Odontólogo');
+            $('#detallesPacienteModal').modal('show');
+
+        } catch (error) {
+            mostrarAlerta('Error al cargar detalles del odontólogo: ' + error.message, 'danger');
+        }
+    }
+
+    // 👥 FUNCIONES COMPLETAS PARA PACIENTES
+    async function listarPacientes() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            allPatients = await response.json();
+            mostrarPacientes(allPatients);
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarAlerta('Error al cargar pacientes: ' + error.message, 'danger');
+        }
+    }
+
+    function mostrarPacientes(patients) {
+        const container = document.getElementById('patients-container');
+
+        if (!patients || patients.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No hay pacientes registrados.</div>';
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>DNI</th>
+                            <th>Fecha Ingreso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        patients.forEach(patient => {
+            html += `
+                <tr>
+                    <td>${patient.id}</td>
+                    <td>${patient.name}</td>
+                    <td>${patient.lastName}</td>
+                    <td>${patient.cardIdentity}</td>
+                    <td>${new Date(patient.admissionOfDate).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editarPaciente(${patient.id})"
+                                ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarPaciente(${patient.id})"
+                                ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-sm btn-info" onclick="verDetallesPaciente(${patient.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    async function crearPaciente() {
+        const patientData = {
+            name: document.getElementById('patientName').value,
+            lastName: document.getElementById('patientLastName').value,
+            cardIdentity: document.getElementById('patientCardIdentity').value,
+            admissionOfDate: document.getElementById('patientAdmissionDate').value,
+            address: {
+                street: document.getElementById('patientStreet').value,
+                number: document.getElementById('patientNumber').value,
+                location: document.getElementById('patientLocation').value,
+                province: document.getElementById('patientProvince').value
+            }
+        };
+
+        // Validar campos requeridos
+        if (!patientData.name || !patientData.lastName || !patientData.cardIdentity || !patientData.admissionOfDate) {
+            mostrarAlerta('Complete todos los campos obligatorios', 'warning');
+            return;
+        }
+
+        if (!patientData.address.street || !patientData.address.number || !patientData.address.location || !patientData.address.province) {
+            mostrarAlerta('Complete todos los campos de dirección', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(patientData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            $('#crearPacienteModal').modal('hide');
+            document.getElementById('crearPacienteForm').reset();
+            mostrarAlerta('✅ Paciente creado exitosamente', 'success');
+            listarPacientes();
+            cargarDashboard();
+            cargarSelectoresUnificados();
+
+        } catch (error) {
+            mostrarAlerta('Error al crear paciente: ' + error.message, 'danger');
+        }
+    }
+
+    async function editarPaciente(id) {
+        const patient = allPatients.find(p => p.id === id);
+        if (!patient) return;
+
+        document.getElementById('editPatientId').value = patient.id;
+        document.getElementById('editPatientName').value = patient.name;
+        document.getElementById('editPatientLastName').value = patient.lastName;
+        document.getElementById('editPatientCardIdentity').value = patient.cardIdentity;
+        document.getElementById('editPatientAdmissionDate').value = patient.admissionOfDate;
+
+        // Dirección
+        if (patient.address) {
+            document.getElementById('editPatientStreet').value = patient.address.street || '';
+            document.getElementById('editPatientNumber').value = patient.address.number || '';
+            document.getElementById('editPatientLocation').value = patient.address.location || '';
+            document.getElementById('editPatientProvince').value = patient.address.province || '';
+        }
+
+        $('#editarPacienteModal').modal('show');
+    }
+
+    async function actualizarPaciente() {
+        const id = document.getElementById('editPatientId').value;
+        const patientData = {
+            name: document.getElementById('editPatientName').value,
+            lastName: document.getElementById('editPatientLastName').value,
+            cardIdentity: document.getElementById('editPatientCardIdentity').value,
+            admissionOfDate: document.getElementById('editPatientAdmissionDate').value,
+            address: {
+                street: document.getElementById('editPatientStreet').value,
+                number: document.getElementById('editPatientNumber').value,
+                location: document.getElementById('editPatientLocation').value,
+                province: document.getElementById('editPatientProvince').value
+            }
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(patientData)
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            $('#editarPacienteModal').modal('hide');
+            mostrarAlerta('✅ Paciente actualizado exitosamente', 'success');
+            listarPacientes();
+            cargarSelectoresUnificados();
+
+        } catch (error) {
+            mostrarAlerta('Error al actualizar paciente: ' + error.message, 'danger');
+        }
+    }
+
+    async function eliminarPaciente(id) {
+        if (!confirm('¿Está seguro de eliminar este paciente?')) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients/delete/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            mostrarAlerta('✅ Paciente eliminado exitosamente', 'success');
+            listarPacientes();
+            cargarDashboard();
+            cargarSelectoresUnificados();
+
+        } catch (error) {
+            mostrarAlerta('Error al eliminar paciente: ' + error.message, 'danger');
+        }
+    }
+
+    async function verDetallesPaciente(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const patient = await response.json();
+
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Información Personal</h6>
+                        <p><strong>Nombre:</strong> ${patient.name} ${patient.lastName}</p>
+                        <p><strong>DNI:</strong> ${patient.cardIdentity}</p>
+                        <p><strong>Fecha de Ingreso:</strong> ${new Date(patient.admissionOfDate).toLocaleDateString()}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Dirección</h6>
+            `;
+
+            if (patient.address) {
+                html += `
+                    <p><strong>Calle:</strong> ${patient.address.street}</p>
+                    <p><strong>Número:</strong> ${patient.address.number}</p>
+                    <p><strong>Localidad:</strong> ${patient.address.location}</p>
+                    <p><strong>Provincia:</strong> ${patient.address.province}</p>
+                `;
+            } else {
+                html += `<p class="text-muted">No hay información de dirección</p>`;
+            }
+
+            html += `</div></div>`;
+
+            document.getElementById('detallesPacienteBody').innerHTML = html;
+            $('#detallesPacienteModal').modal('show');
+
+        } catch (error) {
+            mostrarAlerta('Error al cargar detalles del paciente: ' + error.message, 'danger');
+        }
+    }
+
+    async function buscarPacientePorApellido() {
+        const apellido = prompt('Ingrese el apellido a buscar:');
+        if (!apellido) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients/lastName/${encodeURIComponent(apellido)}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const paciente = await response.json();
+
+            if (paciente && paciente.id) {
+                // Mostrar solo el paciente encontrado
+                mostrarPacientes([paciente]);
+                mostrarAlerta(`Paciente encontrado: ${paciente.name} ${paciente.lastName}`, 'success');
+            } else {
+                mostrarAlerta('No se encontró ningún paciente con ese apellido', 'warning');
+                listarPacientes(); // Volver a mostrar todos
+            }
+
+        } catch (error) {
+            mostrarAlerta('Error en la búsqueda: ' + error.message, 'danger');
+            listarPacientes();
+        }
+    }
+
+    async function buscarPacientePorNombre() {
+        const nombre = prompt('Ingrese el nombre a buscar:');
+        if (!nombre) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/patients/name/${encodeURIComponent(nombre)}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const paciente = await response.json();
+
+            if (paciente && paciente.id) {
+                // Mostrar solo el paciente encontrado
+                mostrarPacientes([paciente]);
+                mostrarAlerta(`Paciente encontrado: ${paciente.name} ${paciente.lastName}`, 'success');
+            } else {
+                mostrarAlerta('No se encontró ningún paciente con ese nombre', 'warning');
+                listarPacientes(); // Volver a mostrar todos
+            }
+
+        } catch (error) {
+            mostrarAlerta('Error en la búsqueda: ' + error.message, 'danger');
+            listarPacientes();
+        }
+    }
+
+    function filtrarPacientes() {
+        const searchTerm = document.getElementById('searchPatient').value.toLowerCase();
+        const filtered = allPatients.filter(patient =>
+            patient.name.toLowerCase().includes(searchTerm) ||
+            patient.lastName.toLowerCase().includes(searchTerm) ||
+            patient.cardIdentity.toLowerCase().includes(searchTerm)
+        );
+        mostrarPacientes(filtered);
+    }
+
+    // 📅 FUNCIONES COMPLETAS PARA TURNOS
+    async function listarTurnos() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments/v2`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            allAppointments = await response.json();
+            mostrarTurnos(allAppointments);
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarAlerta('Error al cargar turnos: ' + error.message, 'danger');
+        }
+    }
+
+    function mostrarTurnos(appointments) {
+        const container = document.getElementById('appointments-container');
+
+        if (!appointments || appointments.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No hay turnos registrados.</div>';
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>ID Odontólogo</th>
+                            <th>ID Paciente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        appointments.forEach(appointment => {
+            // ✅ CORREGIDO: Manejar diferentes formatos de fecha
+            let fechaFormateada = 'Fecha inválida';
+
+            try {
+                if (appointment.date) {
+                    // Si date es un string como "2024-01-15"
+                    if (typeof appointment.date === 'string') {
+                        const fecha = new Date(appointment.date);
+                        if (!isNaN(fecha.getTime())) {
+                            fechaFormateada = fecha.toLocaleDateString();
+                        }
+                    }
+                    // Si date es un objeto con timestamp (poco probable en tu caso)
+                    else if (appointment.date instanceof Object) {
+                        const fecha = new Date(appointment.date);
+                        if (!isNaN(fecha.getTime())) {
+                            fechaFormateada = fecha.toLocaleDateString();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error formateando fecha:', error);
+                fechaFormateada = 'Error fecha';
+            }
+
+            html += `
+                <tr>
+                    <td><strong>${appointment.id}</strong></td>
+                    <td>${fechaFormateada}</td>
+                    <td>
+                        <span class="badge badge-info">${appointment.dentistId || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-secondary">${appointment.patientId || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editarTurno(${appointment.id})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarTurno(${appointment.id})"
+                                ${currentUserRole !== 'ROLE_ADMIN' ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    function getStatusBadge(status) {
+        const statusMap = {
+            'PENDIENTE': 'warning',
+            'CONFIRMADO': 'success',
+            'COMPLETADO': 'info',
+            'CANCELADO': 'danger',
+            'REPROGRAMADO': 'primary',
+            'AUSENTE': 'dark'
+        };
+        const badgeClass = statusMap[status] || 'secondary';
+        return `<span class="badge badge-${badgeClass}">${status || 'PENDIENTE'}</span>`;
+    }
+
+    async function crearTurno() {
+        const dentistId = document.getElementById('appointmentDentist').value;
+        const patientId = document.getElementById('appointmentPatient').value;
+        const date = document.getElementById('appointmentDate').value;
+        const time = document.getElementById('appointmentTime').value;
+        const description = document.getElementById('appointmentDescription').value;
+
+        if (!dentistId || !patientId || !date || !time) {
+            mostrarAlerta('Complete todos los campos obligatorios', 'warning');
+            return;
+        }
+
+        const appointmentData = {
+            dentistId: parseInt(dentistId),
+            patientId: parseInt(patientId),
+            dateTime: `${date}T${time}:00`,
+            description: description
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments/v2`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(appointmentData)
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            $('#crearTurnoModal').modal('hide');
+            document.getElementById('crearTurnoForm').reset();
+            mostrarAlerta('✅ Turno creado exitosamente', 'success');
+            listarTurnos();
+            cargarDashboard();
+            cargarSelectoresUnificados();
+
+        } catch (error) {
+            mostrarAlerta('Error al crear turno: ' + error.message, 'danger');
+        }
+    }
+
+    async function editarTurno(id) {
+        console.log('✏️ Editando turno ID:', id);
+
+        try {
+            // Cargar datos del turno específico
+            const response = await fetch(`${API_BASE_URL}/appointments/v2/${id}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status} al cargar turno`);
+
+            const appointment = await response.json();
+            console.log('📅 Turno a editar:', appointment);
+
+            // Cargar listas de odontólogos y pacientes
+            await cargarSelectoresParaTurnos();
+
+            // Llenar el formulario
+            document.getElementById('editAppointmentId').value = appointment.id;
+
+            // ✅ SOLUCIÓN: Usar appointment.date directamente (ya es LocalDate)
+            document.getElementById('editAppointmentDate').value = appointment.date;
+
+            // ❌ ELIMINAR la parte de hora (o usar un valor por defecto)
+            document.getElementById('editAppointmentTime').value = '10:00'; // Valor por defecto
+
+            document.getElementById('editAppointmentDescription').value = appointment.description || '';
+            document.getElementById('editAppointmentStatus').value = appointment.status || 'PENDIENTE';
+
+            // Seleccionar odontólogo y paciente
+            setTimeout(() => {
+                document.getElementById('editAppointmentDentist').value = appointment.dentistId || '';
+                document.getElementById('editAppointmentPatient').value = appointment.patientId || '';
+            }, 100);
+
+            $('#editarTurnoModal').modal('show');
+
+        } catch (error) {
+            console.error('❌ Error al cargar turno para editar:', error);
+            mostrarAlerta('Error al cargar turno: ' + error.message, 'danger');
+        }
+    }
+
+    async function actualizarTurno() {
+        const id = document.getElementById('editAppointmentId').value;
+        const dentistId = document.getElementById('editAppointmentDentist').value;
+        const patientId = document.getElementById('editAppointmentPatient').value;
+        const date = document.getElementById('editAppointmentDate').value; // Solo fecha
+        const description = document.getElementById('editAppointmentDescription').value;
+
+        if (!dentistId || !patientId || !date) {
+            mostrarAlerta('Complete todos los campos obligatorios', 'warning');
+            return;
+        }
+
+        // ✅ SOLO fecha (sin hora) - porque tu backend usa LocalDate
+        const appointmentData = {
+            dentistId: parseInt(dentistId),
+            patientId: parseInt(patientId),
+            date: date,  // Solo la fecha
+            description: description
+        };
+
+        console.log('📤 Actualizando turno:', appointmentData);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments/v2/${id}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(appointmentData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            const updatedAppointment = await response.json();
+            console.log('✅ Turno actualizado:', updatedAppointment);
+
+            $('#editarTurnoModal').modal('hide');
+            mostrarAlerta('✅ Turno actualizado exitosamente', 'success');
+            listarTurnos();
+            cargarDashboard();
+
+        } catch (error) {
+            console.error('❌ Error al actualizar turno:', error);
+            mostrarAlerta('Error al actualizar turno: ' + error.message, 'danger');
+        }
+    }
+
+    // 📅 FUNCIÓN CORREGIDA PARA ELIMINAR TURNO
+    async function eliminarTurno(id) {
+        if (!confirm('¿Está seguro de eliminar este turno?')) return;
+
+        try {
+            // ✅ URL CORREGIDA - agregar /v2/
+            const response = await fetch(`${API_BASE_URL}/appointments/v2/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            mostrarAlerta('✅ Turno eliminado exitosamente', 'success');
+            listarTurnos();
+            cargarDashboard();
+            cargarSelectoresUnificados();
+
+        } catch (error) {
+            console.error('❌ Error al eliminar turno:', error);
+            mostrarAlerta('Error al eliminar turno: ' + error.message, 'danger');
+        }
+    }
+
+    function filtrarTurnos() {
+        const statusFilter = document.getElementById('filterAppointmentStatus').value;
+        const dateFilter = document.getElementById('filterAppointmentDate').value;
+
+        let filtered = allAppointments;
+
+        if (statusFilter) {
+            filtered = filtered.filter(appointment => appointment.status === statusFilter);
+        }
+
+        if (dateFilter) {
+            filtered = filtered.filter(appointment =>
+                appointment.dateTime.startsWith(dateFilter)
+            );
+        }
+
+        mostrarTurnos(filtered);
+    }
+
+    function mostrarTodosLosTurnos() {
+        document.getElementById('filterAppointmentStatus').value = '';
+        document.getElementById('filterAppointmentDate').value = '';
+        mostrarTurnos(allAppointments);
+    }
+
+    // 🔄 FUNCIONES UNIFICADAS PARA SELECTORES - SIN DUPLICADOS
+    async function cargarSelectoresUnificados() {
+        console.log('🔄 Cargando todos los selectores unificados...');
+        try {
+            await Promise.all([
+                cargarSelectoresParaTurnos(),
+                cargarSelectoresParaReportes()
+            ]);
+            console.log('✅ Todos los selectores cargados correctamente');
+        } catch (error) {
+            console.error('❌ Error cargando selectores:', error);
+        }
+    }
+
+    async function cargarSelectoresParaTurnos() {
+        try {
+            console.log('🎯 Cargando selectores para turnos...');
+
+            const [dentists, patients] = await Promise.all([
+                fetchDentists(),
+                fetchPatients()
+            ]);
+
+            console.log('🦷 Odontólogos cargados:', dentists.length);
+            console.log('👥 Pacientes cargados:', patients.length);
+
+            // Cargar odontólogos en selectores de turnos
+            const selectDentistCrear = document.getElementById('appointmentDentist');
+            const selectDentistEditar = document.getElementById('editAppointmentDentist');
+
+            if (selectDentistCrear) {
+                selectDentistCrear.innerHTML = '<option value="">Seleccionar odontólogo...</option>';
+                dentists.forEach(d => {
+                    selectDentistCrear.innerHTML += `<option value="${d.id}">Dr. ${d.name} ${d.lastName} - ${d.license}</option>`;
+                });
+            }
+
+            if (selectDentistEditar) {
+                selectDentistEditar.innerHTML = '<option value="">Seleccionar odontólogo...</option>';
+                dentists.forEach(d => {
+                    selectDentistEditar.innerHTML += `<option value="${d.id}">Dr. ${d.name} ${d.lastName} - ${d.license}</option>`;
+                });
+            }
+
+            // Cargar pacientes en selectores de turnos - ¡ESTA ES LA PARTE CLAVE!
+            const selectPacienteCrear = document.getElementById('appointmentPatient');
+            const selectPacienteEditar = document.getElementById('editAppointmentPatient');
+
+            console.log('👥 Selector de pacientes encontrado:', !!selectPacienteCrear);
+            console.log('📋 Número de pacientes:', patients.length);
+
+            if (selectPacienteCrear) {
+                selectPacienteCrear.innerHTML = '<option value="">Seleccionar paciente...</option>';
+                patients.forEach(p => {
+                    selectPacienteCrear.innerHTML += `<option value="${p.id}">${p.name} ${p.lastName} - DNI: ${p.cardIdentity}</option>`;
+                });
+                console.log('✅ Pacientes cargados en selector crear turno');
+            }
+
+            if (selectPacienteEditar) {
+                selectPacienteEditar.innerHTML = '<option value="">Seleccionar paciente...</option>';
+                patients.forEach(p => {
+                    selectPacienteEditar.innerHTML += `<option value="${p.id}">${p.name} ${p.lastName} - DNI: ${p.cardIdentity}</option>`;
+                });
+            }
+
+        } catch (error) {
+            console.error('❌ Error cargando selectores para turnos:', error);
+        }
+    }
+
+    async function cargarSelectoresParaReportes() {
+        try {
+            console.log('📊 Cargando selectores para reportes...');
+
+            const [patients, appointments] = await Promise.all([
+                fetchPatients(),
+                fetchAppointments()
+            ]);
+
+            // Selectores de pacientes para reportes
+            const selectorsPacientes = ['selectPatientReport', 'selectPatientCertificate'];
+            selectorsPacientes.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccionar paciente...</option>';
+                    patients.forEach(p => {
+                        select.innerHTML += `<option value="${p.id}">${p.name} ${p.lastName} - DNI: ${p.cardIdentity}</option>`;
+                    });
+                }
+            });
+
+            // Selectores de turnos para reportes
+            const selectorsTurnos = ['selectAppointmentReceipt', 'selectAppointmentReminder', 'selectAppointmentConfirmation'];
+            selectorsTurnos.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccionar turno...</option>';
+                    appointments.forEach(apt => {
+                        const fecha = new Date(apt.dateTime);
+                        const paciente = apt.patient ? `${apt.patient.name} ${apt.patient.lastName}` : 'Paciente';
+                        const odontologo = apt.dentist ? `Dr. ${apt.dentist.name}` : 'Odontólogo';
+                        select.innerHTML += `<option value="${apt.id}">${fecha.toLocaleDateString()} - ${paciente} con ${odontologo}</option>`;
+                    });
+                }
+            });
+
+        } catch (error) {
+            console.error('❌ Error cargando selectores para reportes:', error);
+        }
+    }
+
+    // 🛠️ FUNCIONES AUXILIARES PARA FETCH
+    async function fetchDentists() {
+        const response = await fetch(`${API_BASE_URL}/dentists`, {
+            headers: getAuthHeaders()
+        });
+        if (!response.ok) throw new Error(`Error ${response.status} al cargar odontólogos`);
+        return await response.json();
+    }
+
+    async function fetchPatients() {
+        const response = await fetch(`${API_BASE_URL}/patients`, {
+            headers: getAuthHeaders()
+        });
+        if (!response.ok) throw new Error(`Error ${response.status} al cargar pacientes`);
+        const patients = await response.json();
+        console.log('👥 Pacientes obtenidos del backend:', patients.length);
+        patients.forEach(p => console.log(`   - ${p.name} ${p.lastName} (ID: ${p.id})`));
+        return patients;
+    }
+
+    async function fetchAppointments() {
+        const response = await fetch(`${API_BASE_URL}/appointments/v2`, {
+            headers: getAuthHeaders()
+        });
+        if (!response.ok) throw new Error(`Error ${response.status} al cargar turnos`);
+        return await response.json();
+    }
+
+    // 📊 FUNCIONES DEL DASHBOARD
+    async function cargarDashboard() {
+        await cargarEstadisticas();
+        await cargarTurnosRecientes();
+        await cargarTopOdontologos();
+    }
+
+    async function cargarEstadisticas() {
+        try {
+            console.log('📊 Cargando estadísticas...');
+
+            // Cargar conteos básicos directamente de las APIs principales
+            const [dentistsRes, patientsRes, appointmentsRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/dentists`, { headers: getAuthHeaders() }),
+                fetch(`${API_BASE_URL}/patients`, { headers: getAuthHeaders() }),
+                fetch(`${API_BASE_URL}/appointments/v2`, { headers: getAuthHeaders() })
+            ]);
+
+            // Odontólogos
+            if (dentistsRes.ok) {
+                const dentists = await dentistsRes.json();
+                document.getElementById('stats-dentists').textContent = dentists.length;
+            } else {
+                document.getElementById('stats-dentists').textContent = '0';
+            }
+
+            // Pacientes
+            if (patientsRes.ok) {
+                const patients = await patientsRes.json();
+                document.getElementById('stats-patients').textContent = patients.length;
+            } else {
+                document.getElementById('stats-patients').textContent = '0';
+            }
+
+            // Turnos del día (contar los de hoy)
+            if (appointmentsRes.ok) {
+                const appointments = await appointmentsRes.json();
+                const today = new Date().toISOString().split('T')[0];
+                const appointmentsToday = appointments.filter(apt =>
+                    apt.dateTime && apt.dateTime.startsWith(today)
+                );
+                document.getElementById('stats-appointments-today').textContent = appointmentsToday.length;
+            } else {
+                document.getElementById('stats-appointments-today').textContent = '0';
+            }
+
+            // Estadísticas mensuales (simuladas si el endpoint no funciona)
+            try {
+                const monthlyRes = await fetch(`${API_BASE_URL}/stats/patients-monthly`, {
+                    headers: getAuthHeaders()
+                });
+                if (monthlyRes.ok) {
+                    const monthlyStats = await monthlyRes.json();
+                    document.getElementById('stats-monthly').textContent = monthlyStats.total || '0';
+                } else {
+                    // Simular estadística mensual basada en pacientes totales
+                    if (patientsRes.ok) {
+                        const patients = await patientsRes.json();
+                        document.getElementById('stats-monthly').textContent = Math.floor(patients.length * 1.5);
+                    } else {
+                        document.getElementById('stats-monthly').textContent = '0';
+                    }
+                }
+            } catch (monthlyError) {
+                console.warn('No se pudieron cargar estadísticas mensuales, usando valor simulado');
+                document.getElementById('stats-monthly').textContent = '12'; // Valor por defecto
+            }
+
+            console.log('✅ Estadísticas cargadas correctamente');
+
+        } catch (error) {
+            console.error('❌ Error cargando estadísticas:', error);
+            // Establecer valores por defecto
+            document.getElementById('stats-dentists').textContent = '0';
+            document.getElementById('stats-patients').textContent = '0';
+            document.getElementById('stats-appointments-today').textContent = '0';
+            document.getElementById('stats-monthly').textContent = '0';
+        }
+    }
+
+    async function cargarTurnosRecientes() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments/v2`, {
+                headers: getAuthHeaders()
+            });
+
+            if (response.ok) {
+                const appointments = await response.json();
+                const recent = appointments.slice(0, 5).reverse(); // Últimos 5 turnos
+
+                let html = '';
+                if (recent.length > 0) {
+                    recent.forEach(appointment => {
+                        const fecha = new Date(appointment.dateTime);
+                        const statusBadge = getStatusBadge(appointment.status);
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <div>
+                                    <strong>${appointment.patient?.name} ${appointment.patient?.lastName}</strong><br>
+                                    <small class="text-muted">Dr. ${appointment.dentist?.name} - ${fecha.toLocaleString()}</small>
+                                </div>
+                                ${statusBadge}
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<p class="text-muted">No hay turnos recientes</p>';
+                }
+
+                document.getElementById('recent-appointments').innerHTML = html;
+            }
+        } catch (error) {
+            console.error('Error cargando turnos recientes:', error);
+        }
+    }
+
+    async function cargarTopOdontologos() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/stats/top-dentists`, {
+                headers: getAuthHeaders()
+            });
+
+            console.log('📊 Response status top dentists:', response.status);
+
+            if (response.ok) {
+                const stats = await response.json();
+                console.log('📊 Top dentists data:', stats);
+
+                let html = '';
+
+                // Manejar diferentes estructuras de respuesta
+                if (stats.topDentists && stats.topDentists.length > 0) {
+                    stats.topDentists.forEach((dentist, index) => {
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <div>
+                                    <strong>${index + 1}. Dr. ${dentist.name} ${dentist.lastName}</strong><br>
+                                    <small class="text-muted">${dentist.license || 'Matrícula no disponible'}</small>
+                                </div>
+                                <span class="badge badge-success">${dentist.appointmentCount || dentist.count || 0} turnos</span>
+                            </div>
+                        `;
+                    });
+                } else if (stats.dentists && stats.dentists.length > 0) {
+                    // Si la estructura es diferente
+                    stats.dentists.forEach((dentist, index) => {
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <div>
+                                    <strong>${index + 1}. Dr. ${dentist.name} ${dentist.lastName}</strong><br>
+                                    <small class="text-muted">${dentist.license || 'Matrícula no disponible'}</small>
+                                </div>
+                                <span class="badge badge-success">${dentist.appointmentCount || 0} turnos</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<p class="text-muted">No hay datos de odontólogos disponibles</p>';
+                }
+
+                document.getElementById('top-dentists').innerHTML = html;
+            } else {
+                console.warn('❌ No se pudieron cargar las estadísticas de odontólogos');
+                document.getElementById('top-dentists').innerHTML =
+                    '<p class="text-muted">Estadísticas no disponibles</p>';
+            }
+        } catch (error) {
+            console.error('❌ Error cargando top odontólogos:', error);
+            document.getElementById('top-dentists').innerHTML =
+                '<p class="text-muted">Error cargando estadísticas</p>';
+        }
+    }
+
+    // 📄 FUNCIONES DE REPORTES PDF
+    async function generarReportePaciente() {
+        const patientId = document.getElementById('selectPatientReport').value;
+        if (!patientId) {
+            mostrarAlerta('Seleccione un paciente', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/pdf/patient-report/${patientId}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte-paciente-${patientId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            mostrarAlerta('✅ Reporte descargado exitosamente', 'success');
+
+        } catch (error) {
+            mostrarAlerta('Error al generar reporte: ' + error.message, 'danger');
+        }
+    }
+
+    async function generarComprobanteTurno() {
+        const appointmentId = document.getElementById('selectAppointmentReceipt').value;
+        if (!appointmentId) {
+            mostrarAlerta('Seleccione un turno', 'warning');
+            return;
+        }
+
+        try {
+            console.log('🎫 Generando comprobante para turno:', appointmentId);
+
+            const response = await fetch(`${API_BASE_URL}/pdf/appointment-receipt/${appointmentId}`, {
+                headers: getAuthHeaders()
+            });
+
+            console.log('📄 Response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            // Verificar que la respuesta sea un PDF
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/pdf')) {
+                throw new Error('La respuesta no es un PDF válido');
+            }
+
+            const blob = await response.blob();
+            console.log('📦 PDF generado, tamaño:', blob.size, 'bytes');
+
+            if (blob.size === 0) {
+                throw new Error('El PDF generado está vacío');
+            }
+
+            // Crear y descargar el PDF
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `comprobante-turno-${appointmentId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+
+            // Limpiar
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 100);
+
+            mostrarAlerta('✅ Comprobante descargado exitosamente', 'success');
+
+        } catch (error) {
+            console.error('❌ Error al generar comprobante:', error);
+            mostrarAlerta('Error al generar comprobante: ' + error.message, 'danger');
+
+            // Si falla el endpoint específico, intentar con el genérico
+            if (error.message.includes('404')) {
+                mostrarAlerta('El endpoint de comprobantes no está disponible', 'warning');
+            }
+        }
+    }
+
+    async function generarCertificadoMedico() {
+        const patientId = document.getElementById('selectPatientCertificate').value;
+        const diagnosis = document.getElementById('certificateDiagnosis').value;
+        const treatment = document.getElementById('certificateTreatment').value;
+
+        if (!patientId || !diagnosis || !treatment) {
+            mostrarAlerta('Complete todos los campos', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/pdf/medical-certificate/${patientId}`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ diagnosis, treatment })
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `certificado-medico-${patientId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            mostrarAlerta('✅ Certificado generado exitosamente', 'success');
+
+        } catch (error) {
+            mostrarAlerta('Error al generar certificado: ' + error.message, 'danger');
+        }
+    }
+
+    // 🔔 FUNCIONES DE NOTIFICACIONES
+    async function cargarNotificaciones() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/notifications/all`, {
+                headers: getAuthHeaders()
+            });
+
+            if (response.ok) {
+                allNotifications = await response.json();
+                mostrarNotificacionesRecientes(allNotifications);
+            }
+        } catch (error) {
+            console.error('Error cargando notificaciones:', error);
+        }
+    }
+
+    function mostrarNotificacionesRecientes(notifications) {
+        const container = document.getElementById('recent-notifications');
+        const recent = notifications.slice(0, 5).reverse(); // Últimas 5 notificaciones
+
+        let html = '';
+        if (recent.length > 0) {
+            recent.forEach(notification => {
+                const fecha = new Date(notification.createdAt || Date.now());
+                html += `
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>${notification.type || 'Notificación'}</strong><br>
+                            <small class="text-muted">${notification.message || 'Sin mensaje'} - ${fecha.toLocaleString()}</small>
+                        </div>
+                        <span class="badge badge-${notification.status === 'ENVIADO' ? 'success' : 'warning'}">${notification.status || 'PENDIENTE'}</span>
+                    </div>
+                `;
+            });
+        } else {
+            html = '<p class="text-muted">No hay notificaciones recientes</p>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    async function cargarTodasLasNotificaciones() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/notifications/all`, {
+                headers: getAuthHeaders()
+            });
+
+            if (response.ok) {
+                allNotifications = await response.json();
+                mostrarTodasLasNotificaciones(allNotifications);
+            } else {
+                throw new Error(`Error ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error cargando todas las notificaciones:', error);
+            document.getElementById('notifications-history').innerHTML = `
+                <div class="alert alert-warning">
+                    No se pudieron cargar las notificaciones. Es posible que necesites permisos de administrador.
+                </div>
+            `;
+        }
+    }
+
+    function mostrarTodasLasNotificaciones(notifications) {
+        const container = document.getElementById('notifications-history');
+
+        if (!notifications || notifications.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No hay notificaciones en el historial.</div>';
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Mensaje</th>
+                            <th>Paciente</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        notifications.forEach(notification => {
+            const fecha = new Date(notification.createdAt || Date.now());
+            html += `
+                <tr>
+                    <td>${notification.id || 'N/A'}</td>
+                    <td>${notification.type || 'N/A'}</td>
+                    <td>${notification.message || 'N/A'}</td>
+                    <td>${notification.patientEmail || 'N/A'}</td>
+                    <td><span class="badge badge-${notification.status === 'ENVIADO' ? 'success' : 'warning'}">${notification.status || 'PENDIENTE'}</span></td>
+                    <td>${fecha.toLocaleString()}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    async function enviarRecordatorio() {
+        const appointmentId = document.getElementById('selectAppointmentReminder').value;
+        if (!appointmentId) {
+            mostrarAlerta('Seleccione un turno', 'warning');
+            return;
+        }
+
+        try {
+            // Obtener información del turno
+            const appointmentResponse = await fetch(`${API_BASE_URL}/appointments/v2/${appointmentId}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!appointmentResponse.ok) throw new Error('No se pudo obtener información del turno');
+
+            const appointment = await appointmentResponse.json();
+
+            const notificationData = {
+                patientEmail: appointment.patient?.email || 'paciente@ejemplo.com',
+                patientName: `${appointment.patient?.name} ${appointment.patient?.lastName}`,
+                appointmentDate: new Date(appointment.dateTime).toLocaleString(),
+                dentistName: `Dr. ${appointment.dentist?.name} ${appointment.dentist?.lastName}`,
+                type: 'RECORDATORIO'
+            };
+
+            const response = await fetch(`${API_BASE_URL}/notifications/appointment-reminder`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(notificationData)
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const result = await response.json();
+            mostrarAlerta('✅ Recordatorio enviado exitosamente', 'success');
+            cargarNotificaciones();
+
+        } catch (error) {
+            mostrarAlerta('Error al enviar recordatorio: ' + error.message, 'danger');
+        }
+    }
+
+    async function enviarConfirmacion() {
+        const appointmentId = document.getElementById('selectAppointmentConfirmation').value;
+        if (!appointmentId) {
+            mostrarAlerta('Seleccione un turno', 'warning');
+            return;
+        }
+
+        try {
+            // Obtener información del turno
+            const appointmentResponse = await fetch(`${API_BASE_URL}/appointments/v2/${appointmentId}`, {
+                headers: getAuthHeaders()
+            });
+
+            if (!appointmentResponse.ok) throw new Error('No se pudo obtener información del turno');
+
+            const appointment = await appointmentResponse.json();
+
+            const notificationData = {
+                patientEmail: appointment.patient?.email || 'paciente@ejemplo.com',
+                patientName: `${appointment.patient?.name} ${appointment.patient?.lastName}`,
+                appointmentDate: new Date(appointment.dateTime).toLocaleString(),
+                dentistName: `Dr. ${appointment.dentist?.name} ${appointment.dentist?.lastName}`,
+                type: 'CONFIRMACION'
+            };
+
+            const response = await fetch(`${API_BASE_URL}/notifications/appointment-confirmation`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(notificationData)
+            });
+
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+
+            const result = await response.json();
+            mostrarAlerta('✅ Confirmación enviada exitosamente', 'success');
+            cargarNotificaciones();
+
+        } catch (error) {
+            mostrarAlerta('Error al enviar confirmación: ' + error.message, 'danger');
+        }
+    }
+
+    // 📈 FUNCIONES DE ESTADÍSTICAS DETALLADAS
+    function showStatsModal() {
+        $('#statsModal').modal('show');
+        cargarEstadisticasDetalladas();
+    }
+
+    async function cargarEstadisticasDetalladas() {
+        try {
+            const [patientsRes, appointmentsRes, overviewRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/stats/patients-monthly`, { headers: getAuthHeaders() }),
+                fetch(`${API_BASE_URL}/stats/appointments-today`, { headers: getAuthHeaders() }),
+                fetch(`${API_BASE_URL}/stats/overview`, { headers: getAuthHeaders() })
+            ]);
+
+            // Estadísticas de pacientes
+            if (patientsRes.ok) {
+                const stats = await patientsRes.json();
+                document.getElementById('stats-patients-detailed').innerHTML = `
+                    <p><strong>Total mensual:</strong> ${stats.total || 0} pacientes</p>
+                    <p><strong>Tendencia:</strong> ${stats.trend || 'Estable'}</p>
+                    <p><strong>Período:</strong> ${stats.period || 'Actual'}</p>
+                `;
+            }
+
+            // Estadísticas de turnos
+            if (appointmentsRes.ok) {
+                const stats = await appointmentsRes.json();
+                document.getElementById('stats-appointments-detailed').innerHTML = `
+                    <p><strong>Turnos hoy:</strong> ${stats.total || 0}</p>
+                    <p><strong>Confirmados:</strong> ${stats.confirmed || 0}</p>
+                    <p><strong>Pendientes:</strong> ${stats.pending || 0}</p>
+                `;
+            }
+
+            // Resumen general
+            if (overviewRes.ok) {
+                const stats = await overviewRes.json();
+                document.getElementById('stats-overview').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Odontólogos activos:</strong> ${stats.activeDentists || 0}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Pacientes totales:</strong> ${stats.totalPatients || 0}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Turnos del mes:</strong> ${stats.monthlyAppointments || 0}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+        } catch (error) {
+            console.error('Error cargando estadísticas detalladas:', error);
+        }
+    }
+
+    // 🛠️ FUNCIONES UTILITARIAS
+    function getAuthHeaders() {
+        const token = localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+        };
+    }
+
+    function mostrarAlerta(mensaje, tipo = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${mensaje}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        `;
+
+        const container = document.getElementById('alertContainer');
+        container.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    function logout() {
+        if (confirm('¿Está seguro de cerrar sesión?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // Inicializar fecha actual en los formularios
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('patientAdmissionDate').value = today;
+        document.getElementById('appointmentDate').value = today;
+
+        $(document).ready(function() {
+            // Reinicializar todos los componentes
+            $('.form-control').trigger('change');
+            console.log('✅ Componentes Bootstrap reinicializados');
+        });
+
+        // Solución específica para el selector de pacientes
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'appointmentPatient') {
+                console.log('🎯 Click en selector de pacientes');
+                // Forzar que se muestren las opciones
+                const select = document.getElementById('appointmentPatient');
+                if (select) {
+                    select.size = select.options.length;
+                    setTimeout(() => {
+                        select.size = 1;
+                    }, 3000);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
