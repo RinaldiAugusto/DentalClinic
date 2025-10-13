@@ -41,6 +41,19 @@ src/main/java/com/augusto/__ClinicaOdontologicaSpringJPA/
 └── exception/ # Manejo de excepciones
 ```
 
+## 🎯 Demo en Vivo
+
+**Frontend**: https://rinaldiaugusto.github.io/DentalClinic  
+**API Docs**: https://dental-clinic-backend-53ys.onrender.com/swagger-ui.html
+
+## 🛠️ Características
+- ✅ Autenticación JWT
+- ✅ CRUD completo (Pacientes, Odontólogos, Turnos)
+- ✅ Frontend responsive con Bootstrap
+- ✅ API RESTful documentada
+- ✅ Despliegue en producción
+
+
 ---
 
 ## 📚 Módulos Principales
@@ -150,18 +163,6 @@ jwt.expiration=86400000
 server.port=8080
 ```
 
-### Ejecución Local
-```
-# Clonar el repositorio
-git clone https://github.com/RinaldiAugusto/DentalClinic.git
-
-# Navegar al directorio
-cd DentalClinic
-
-# Compilar y ejecutar
-mvn spring-boot:run
-```
-
 ## 📡 API Endpoints
 
 ### Autenticación
@@ -245,16 +246,6 @@ Spring Boot Actuator: Health checks y métricas
 Logging: Configuración con Logback
 ```
 
-## 🚀 Despliegue en Producción
-```
-Plataforma: Render.com
-
-URL: https://dental-clinic-backend-53ys.onrender.com
-
-Base de Datos: PostgreSQL
-
-CI/CD: Integración con GitHub
-```
 
 ## 👨‍💻 Habilidades Demostradas
 ```
